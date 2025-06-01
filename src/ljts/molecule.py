@@ -6,10 +6,8 @@ cutoff = (4 * ((1.0 / u12) - (1.0 / u6))) ** 2
 
 
 class Molecule:
-    def __init__(self, id, x, y, z, vx=0.0, vy=0.0, vz=0.0):
-        self.id = id
-        self.q = np.array([x, y, z])
-        self.v = np.array([vx, vy, vz])
+    def __init__(self, position):
+        self.q = np.array(position)
 
     def kinetic_energy(self):
         return 0.5 * np.dot(self.v, self.v)
