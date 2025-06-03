@@ -7,32 +7,34 @@ class Box:
         """
         initializing the box class that will contain all the molecules. and will also generate the distrobution
         """
-        self.size = np.array([lx, ly, lz])
-        self.molecules = []
-        self.total_Epot = 0
+        self._size = np.array([lx, ly, lz])
+        self._molecules = []
+        self._total_Epot = 0
 
     def add_molecule(self, mol):
         """
         method for adding molecules to the box/system
         """
-        self.molecules.append(mol)
+        self._molecules.append(mol)
 
     def total_potential_energy(self):
         """
         calculating the total potential energy of all molecules withing the box/system by calculating the potential energy between molecule and the neighbors.
         """
         Epot = 0.0
-        n = len(self.molecules)
+        n = len(self._molecules)
         for i in range(n):
             for j in range(i + 1, n):
-                Epot += self.molecules[i].potential_energy(self.molecules[j], self.size)
-        self.total_Epot = Epot
+                Epot += self._molecules[i].potential_energy(
+                    self._molecules[j], self._size
+                )
+        self._total_Epot = Epot
 
     def populate_box(self, den_liq, den_vap):
         """
         function for populating the box/system by taking the parameters defined in main script and from that creating a distrobution of molecules within the different zones
         """
-        lx, ly, lz = self.size
+        lx, ly, lz = self._size
         vol = lx * ly * lz
 
         ratios = np.array([2, 1, 2])
@@ -46,4 +48,17 @@ class Box:
             pos = np.random.uniform(
                 low=(0, min, 0), high=(lx, max, lz), size=(count, 3)
             )
-            self.molecules.extend(map(Molecule, pos))
+            self._molecules.extend(map(Molecule, pos))
+
+    """ 
+    defining the getters, no need for setters
+    """
+
+    """     def get_size(self):
+        return self._size """
+
+    def get_molecules(self):
+        return self._molecules
+
+    def get_total_epot(self):
+        return self._total_Epot

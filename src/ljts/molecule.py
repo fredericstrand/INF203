@@ -10,7 +10,7 @@ u = 4 * ((1.0 / u12) - (1.0 / u6))
 
 class Molecule:
     def __init__(self, position):
-        self.q = np.array(position)
+        self._q = np.array(position)
 
     def kinetic_energy(self):
         return 0.5 * np.dot(self.v, self.v)
@@ -19,7 +19,7 @@ class Molecule:
         """
         potential energy for molecule and each neighbor given formula from task
         """
-        delta = self.q - other.q
+        delta = self._q - other._q
 
         delta -= size * np.round(delta / size)
 
