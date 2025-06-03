@@ -21,7 +21,7 @@ class Molecule:
         """
         delta = self.q - other.q
 
-        delta -= self.size * np.round(delta / size)
+        delta -= size * np.round(delta / size)
 
         r2 = np.dot(delta, delta)
 

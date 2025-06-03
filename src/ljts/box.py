@@ -9,6 +9,7 @@ class Box:
         """
         self.size = np.array([lx, ly, lz])
         self.molecules = []
+        self.total_Epot = 0
 
     def add_molecule(self, mol):
         """
@@ -25,7 +26,7 @@ class Box:
         for i in range(n):
             for j in range(i + 1, n):
                 Epot += self.molecules[i].potential_energy(self.molecules[j], self.size)
-        return Epot
+        self.total_Epot = Epot
 
     def populate_box(self, den_liq, den_vap):
         """
