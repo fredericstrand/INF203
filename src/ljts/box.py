@@ -51,7 +51,7 @@ class Box:
             pos = np.random.uniform(
                 low=(0, min, 0), high=(lx, max, lz), size=(count, 3)
             )
-            self._molecules.extend(map(Molecule, pos))
+            self._molecules.append(map(Molecule, pos))
 
     """ 
     defining the getters, no need for setters
@@ -60,8 +60,10 @@ class Box:
     """     def get_size(self):
         return self._size """
 
+    @property
     def get_molecules(self):
         return self._molecules
 
+    @property
     def get_total_epot(self):
         return self._total_Epot
