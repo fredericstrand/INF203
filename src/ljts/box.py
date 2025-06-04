@@ -3,13 +3,16 @@ from src.ljts.molecule import Molecule
 
 
 class Box:
-    def __init__(self, lx, ly, lz):
+    def __init__(self, lx, ly, lz, den_liq=None, den_vap=None):
         """
         initializing the box class that will contain all the molecules. and will also generate the distrobution
         """
         self._size = np.array([lx, ly, lz])
         self._molecules = []
         self._total_Epot = 0
+
+        if den_liq and den_vap:
+            self._populate_box(den_liq, den_vap)
 
     def add_molecule(self, mol):
         """
@@ -30,7 +33,7 @@ class Box:
                 )
         self._total_Epot = Epot
 
-    def populate_box(self, den_liq, den_vap):
+    def _populate_box(self, den_liq, den_vap):
         """
         function for populating the box/system by taking the parameters defined in main script and from that creating a distrobution of molecules within the different zones
         """
@@ -48,7 +51,7 @@ class Box:
             pos = np.random.uniform(
                 low=(0, min, 0), high=(lx, max, lz), size=(count, 3)
             )
-            self._molecules.extend(map(Molecule, pos))
+            self._molecules.append(map(Molecule, pos))
 
     """ 
     defining the getters, no need for setters
@@ -57,8 +60,10 @@ class Box:
     """     def get_size(self):
         return self._size """
 
+    @property
     def get_molecules(self):
         return self._molecules
 
+    @property
     def get_total_epot(self):
         return self._total_Epot
