@@ -1,6 +1,7 @@
 import numpy as np
 from src.ljts.molecule import Molecule
 
+
 class Box:
     def __init__(self, len_x, len_y, len_z, den_liq=None, den_vap=None):
         """
@@ -47,10 +48,38 @@ class Box:
         mol_count = (densities * zone).astype(int)
 
         for (max, min), count in zip(zip(boundaries[:-1], boundaries[1:]), mol_count):
-            pos = np.random.uniform(low=(0, min, 0), high=(len_x, max, len_z), size=(count, 3))
+            pos = np.random.uniform(
+                low=(0, min, 0), high=(len_x, max, len_z), size=(count, 3)
+            )
             self._molecules.extend([Molecule(pos) for pos in pos])
 
-    """ 
+    def simulation(self, T, b):
+        accepted = 0
+        old_E = 0.0
+        new_E = 0.0
+
+        N = len(self._molecules)
+        for i in range(N):
+            id = np.random.randint(N)
+            mol = self._molecules[id]
+
+            mol.move_random(b, self._size)
+
+            for other in self._molecules:
+                if other is mol:
+                    continue
+
+                old_E += mol.potential_energy(other, self._size, use_alt_self=False)
+                new_E += mol.potential_energy(other, self._size, use_alt_self=True)
+            delta_E = new_E - old_E
+
+            if delta_E <= 0.0 or np.random.rand() < np.exp(-delta_E / T):
+                mol._position = np.copy(mol._alt_position)
+                accepted += 1
+        self.total_potential_energy()
+        return accepted / N
+
+    """
     defining the getters, no need for setters
     """
 
