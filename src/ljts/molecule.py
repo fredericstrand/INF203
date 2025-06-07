@@ -14,7 +14,7 @@ class Molecule:
         return 0.5 * np.dot(self.v, self.v) """
 
     def reset_alt_position(self):
-        self._alt_position = self._position
+        self._alt_position = np.copy(self._position)
 
     def move_random(self, b, box_size):
         self._alt_position = (

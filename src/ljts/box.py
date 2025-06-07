@@ -55,13 +55,13 @@ class Box:
 
     def simulation(self, T, b):
         accepted = 0
-        old_E = 0.0
-        new_E = 0.0
 
         N = len(self._molecules)
         for i in range(N):
             id = np.random.randint(N)
             mol = self._molecules[id]
+            old_E = 0.0
+            new_E = 0.0
 
             mol.move_random(b, self._size)
 
