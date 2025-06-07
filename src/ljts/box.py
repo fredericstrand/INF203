@@ -47,7 +47,7 @@ class Box:
         densities = [den_vap, den_liq, den_vap]
         mol_count = (densities * zone).astype(int)
 
-        for (max, min), count in zip(zip(boundaries[:-1], boundaries[1:]), mol_count):
+        for (min, max), count in zip(zip(boundaries[:-1], boundaries[1:]), mol_count):
             pos = np.random.uniform(
                 low=(0, min, 0), high=(len_x, max, len_z), size=(count, 3)
             )
