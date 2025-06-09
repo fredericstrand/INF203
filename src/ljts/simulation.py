@@ -33,7 +33,7 @@ class Simulation(ABC):
 
 class MetropolisMC(Simulation):
     def __init__(self, box, T: float, b: float):
-        super().__init__(box)
+        super().__init__(box, log_every = log_every)
         self.T = T
         self.b = b
 
@@ -63,7 +63,7 @@ class MetropolisMC(Simulation):
 
             # Accept or reject the move based on Metropolis criterion
             if delta_E < 0 or np.random.rand() < np.exp(-delta_E / self.T):
-                mol._position = np.copy(mol._alt_position)
+                mol.position = np.copy(mol.alt_position)
                 accepted += 1
             else:
                 mol.reset_alt_position()

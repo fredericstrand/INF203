@@ -1,9 +1,9 @@
-from abs import ABC, abstractmethod
+from abc import ABC, abstractmethod
 import numpy as np
 
 class Potential(ABC):
     @abstractmethod
-    def potential_energy(self, other, box_size) -> float:
+    def potential_energy(self, pos_i: np.ndarray, pos_j: np.ndarray, box_size: np.ndarray) -> float:
         """
         Abstract method to calculate the potential energy between this molecule and another.
         Subclasses must implement this method.
@@ -15,11 +15,11 @@ class LJTS(Potential):
         self.cutoff = cutoff
         self.u = 4 * ((1.0 / cutoff**12) - (1.0 / cutoff**6))
 
-    def potential_energy(self, other, box_size):
+    def potential_energy(self, pos_i, pos_j, box_size):
         """
         Calculate the potential energy between this molecule and another using the Lennard-Jones potential.
         """
-        delta = self._position - other._position
+        delta = pos_i - pos_j
         delta -= box_size * np.round(delta / box_size)
 
         r2 = np.dot(delta, delta)

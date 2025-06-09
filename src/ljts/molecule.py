@@ -13,3 +13,11 @@ class Molecule:
 
     def move_random(self, b, box_size):
         self._alt_position = (self._alt_position + np.random.uniform(-b, b, 3)) % box_size
+
+    @property
+    def position(self):
+        return self._position
+
+    @property
+    def alt_position(self):
+        return self._alt_position

@@ -1,14 +1,45 @@
-from src.ljts.box import Box
+from src.ljts.potential import LJTS
+from src.ljts.box       import Box
+from src.ljts.simulation import MetropolisMC
 
+def main():
+    # 1) Create the inter‐particle potential
+    potential = LJTS(cutoff=2.5)
 
-box = Box(5, 40, 5, den_liq=0.73, den_vap=0.02)
-for step in range(1, 1001):
-    acceptance = box.simulation(T=0.8, b=1 / 8)
+    # 2) Build the Box and populate it
+    box = Box(
+        len_x   = 5,
+        len_y   = 40,
+        len_z   = 5,
+        den_liq = 0.73,
+        den_vap = 0.02,
+        potential = potential
+    )
 
-    if step % 50 == 0 or step == 1:
-        print(f"{step} E_pot: {box.get_total_epot} Acceptance: {acceptance:.2f}")
+    # 3) Optionally print initial stats
+    print(f"Initial # molecules: {len(box._molecules)}")
+    print(f"Initial E_pot:        {box.total_epot:.5f}")
 
+    # 4) Set up Monte Carlo simulation
+    mc = MetropolisMC(
+        box,           # your Box instance
+        T = 0.8,       # temperature
+        b = 1/8,       # max displacement
+        log_energy = True
+    )
 
-box.total_potential_energy()
-print(f"total potential energy: {box._total_Epot}")
-print(f"Number of molecules: {len(box._molecules)}")
+    # 5) Equilibration phase
+    print("\n=== Equilibration ===")
+    mc.run(n_steps=1000, log_interval=200)
+
+    # 6) Production phase
+    print("\n=== Production ===")
+    mc.run(n_steps=2000, log_interval=200)
+
+    # 7) Final results
+    print("\n=== Final Results ===")
+    print(f"Final E_pot:        {box.total_epot:.5f}")
+    print(f"Total # molecules:  {len(box._molecules)}")
+
+if __name__ == "__main__":
+    main()
