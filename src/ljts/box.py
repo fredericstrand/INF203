@@ -72,3 +72,7 @@ class Box:
     @property
     def num_molecules(self) -> int:
         return len(self._molecules)
+
+    @property
+    def box_size(self):
+        return self._box_size

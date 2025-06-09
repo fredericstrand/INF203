@@ -21,3 +21,9 @@ class Molecule:
     @property
     def alt_position(self):
         return self._alt_position
+
+    @position.setter
+    def position(self, new_position):
+        if len(new_position) != 3:
+            raise ValueError("New position must be a 3D vector with three components.")
+        self._position = np.array(new_position)

@@ -28,16 +28,16 @@ class Simulation(ABC):
 
             if self.log_energy:
                 output += f", Potential energy: {self.box._total_Epot:.3f}"
-            if step == 1 or s % log_interval == 0:
+            if step == 1 or step % log_interval == 0:
                 print(output)
 
 class MetropolisMC(Simulation):
-    def __init__(self, box, T: float, b: float):
-        super().__init__(box, log_every = log_every)
+    def __init__(self, box, T: float, b: float, *, log_energy: bool = True):
+        super().__init__(box, log_energy = log_energy)
         self.T = T
         self.b = b
 
-    def step() -> float:
+    def step(self) -> float:
         accepted = 0
         N = len(self.box._molecules)
         for i in range(N):
@@ -46,18 +46,29 @@ class MetropolisMC(Simulation):
             
             # Calculate potential energy before moving
             old_E = sum(
-                mol.potential_energy(other, self.box._size, use_alt_self=False)
-                for other in self.box._molecules if other is not mol
+                self.box.potential.potential_energy(
+                    mol.position,
+                    other.position,
+                    self.box.box_size
+                )
+                for other in self.box.get_molecules
+                if other is not mol
             )
 
-            # Move the molecule randomly
-            mol.move_random(self.b, self.box._size)
+            # trial move
+            mol.move_random(self.b, self.box.box_size)
 
-            # Calculate potential energy after moving
+            # new energy with the trial position
             new_E = sum(
-                mol.potential_energy(other, self.box._size, use_alt_self=True)
-                for other in self.box._molecules if other is not mol
+                self.box.potential.potential_energy(
+                    mol.alt_position,
+                    other.position,
+                    self.box.box_size
+                )
+                for other in self.box.get_molecules
+                if other is not mol
             )
+
 
             delta_E = new_E - old_E
 
