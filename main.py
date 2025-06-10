@@ -16,10 +16,10 @@ def main():
     )
 
     T = 0.8
-    zeta = 1.0000001
-    n_eq = 50000
-    n_pr = 100000
-    log_interval = 10000
+    zeta = 1.01
+    n_eq = 1000
+    n_pr = 2000
+    log_interval = 500
 
     mc = MetropolisMC(box, T=T, b=1/8, log_energy=False)
     mc.run(n_steps=n_eq, log_interval=log_interval)
