@@ -61,6 +61,15 @@ class Box:
             )
             self._molecules.extend([Molecule(pos) for pos in pos])
 
+    def write_XYZ(self, path, mode="w"):
+        with open(path, mode) as file:
+            file.write(f"{len(self._molecules)}\n")
+            file.write(f"#\n")
+            for mol in self._molecules:
+                file.write(
+                    f"C {mol._position[0]} {mol._position[1]} {mol._position[2]}\n"
+                )
+
     @property
     def get_molecules(self):
         return self._molecules

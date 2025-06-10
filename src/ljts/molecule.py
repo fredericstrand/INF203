@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Molecule:
     def __init__(self, position):
         if len(position) != 3:
@@ -12,7 +13,9 @@ class Molecule:
         self._alt_position = np.copy(self._position)
 
     def move_random(self, b, box_size):
-        self._alt_position = (self._alt_position + np.random.uniform(-b, b, 3)) % box_size
+        self._alt_position = (
+            self._alt_position + np.random.uniform(-b, b, 3)
+        ) % box_size
 
     @property
     def position(self):
