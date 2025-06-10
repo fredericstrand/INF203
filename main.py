@@ -2,7 +2,7 @@ import numpy as np
 from src.ljts.potential import LJTS
 from src.ljts.box import Box
 from src.ljts.simulation import MetropolisMC
-from src.ljts.distortion import compute_delta_U_and_A
+from src.ljts.distortion import compute_distortion
 
 def main():
     potential = LJTS(cutoff=2.5)
@@ -35,7 +35,7 @@ def main():
 
         if step % log_interval == 0:
             # distortion that increases area
-            dU1, dA1 = compute_delta_U_and_A(
+            dU1, dA1 = compute_distortion(
                 box.get_molecules,
                 box.box_size,
                 box.potential, 
@@ -44,7 +44,7 @@ def main():
                 sqrt_zeta
             )
             # distortion that decreases area
-            dU2, dA2 = compute_delta_U_and_A(
+            dU2, dA2 = compute_distortion(
                 box.get_molecules,
                 box.box_size,
                 box.potential,
@@ -64,11 +64,7 @@ def main():
             gamma1 = -T * np.log(avg1) / dA1
             gamma2 = -T * np.log(avg2) / dA2
 
-            print(
-                f"[Step {step}] Epot={Epot:.3f} acc={acceptance:.3f} "
-                f"e1={e1:.3e} avg1={avg1:.3e} gamma1={gamma1:.3f} | "
-                f"e2={e2:.3e} avg2={avg2:.3e} gamma2={gamma2:.3f}"
-            )
+            print(f"[Step {step}] Epot={Epot:.3f} acc={acceptance:.3f} e1={e1:.3e} avg1={avg1:.3e} gamma1={gamma1:.3f} | e2={e2:.3e} avg2={avg2:.3e} gamma2={gamma2:.3f}")
 
     print(
         f"gamma(area increase) = {gamma1:.6f}, gamma(area decrease) = {gamma2:.6f}"

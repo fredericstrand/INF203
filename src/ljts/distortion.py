@@ -1,8 +1,8 @@
 import numpy as np
 
-def compute_delta_U_and_A(molecules, box_size, potential, sx, sy, sz):
+def compute_distortion(molecules, box_size, potential, sx, sy, sz):
     """
-    Compute the change in potential energy (ΔU) and interface area (ΔA)
+    Compute the change in potential energy (delta U) and interface area (delta A)
     for a small, volume-conserving distortion of the simulation box and coordinates.
     """
     # Undistorted energy
