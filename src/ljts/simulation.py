@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 
+
 class Simulation(ABC):
     """
     Base class for Monete Carlo simulations.
@@ -18,7 +19,7 @@ class Simulation(ABC):
         Perform one Monte Carlo step and return the acceptance ratio.
         """
 
-    def run(self, n_steps: int, log_interval: int = 50):
+    def run(self, n_steps: int, log_interval: int = 200, xyz_path: str = None):
         """
         Run the simulation for a specified number of steps, logging the potential energy and acceptance ratio at specified intervals.
         """
@@ -29,11 +30,13 @@ class Simulation(ABC):
             if self.log_energy:
                 output += f", Potential energy: {self.box._total_Epot:.3f}"
             if step == 1 or step % log_interval == 0:
+                self.box.write_XYZ("data/trajectory.xyz", mode="a")
                 print(output)
+
 
 class MetropolisMC(Simulation):
     def __init__(self, box, T: float, b: float, *, log_energy: bool = True):
-        super().__init__(box, log_energy = log_energy)
+        super().__init__(box, log_energy=log_energy)
         self.T = T
         self.b = b
 
@@ -43,13 +46,11 @@ class MetropolisMC(Simulation):
         for i in range(N):
             idx = np.random.randint(N)
             mol = self.box._molecules[idx]
-            
+
             # Calculate potential energy before moving
             old_E = sum(
                 self.box.potential.potential_energy(
-                    mol.position,
-                    other.position,
-                    self.box.box_size
+                    mol.position, other.position, self.box.box_size
                 )
                 for other in self.box.get_molecules
                 if other is not mol
@@ -61,14 +62,11 @@ class MetropolisMC(Simulation):
             # new energy with the trial position
             new_E = sum(
                 self.box.potential.potential_energy(
-                    mol.alt_position,
-                    other.position,
-                    self.box.box_size
+                    mol.alt_position, other.position, self.box.box_size
                 )
                 for other in self.box.get_molecules
                 if other is not mol
             )
-
 
             delta_E = new_E - old_E
 
@@ -81,4 +79,3 @@ class MetropolisMC(Simulation):
 
         self.box.total_potential_energy()
         return accepted / N
-

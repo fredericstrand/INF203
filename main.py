@@ -3,8 +3,16 @@ from src.ljts.potential import LJTS
 from src.ljts.box import Box
 from src.ljts.simulation import MetropolisMC
 from src.ljts.distortion import compute_distortion
+from src.config import parseArgs
+import os
+
 
 def main():
+    args = parseArgs()
+    os.makedirs("data", exist_ok=True)
+    # os.makedirs(os.path.dirname(args.log), exist_ok=True)
+    
+    # 1) Create the inter‐particle potential
     potential = LJTS(cutoff=2.5)
     box = Box(
         len_x=5,
@@ -14,7 +22,13 @@ def main():
         den_vap=0.02,
         potential=potential
     )
+    
+    # 3) Optionally print initial stats
+    print(f"Initial # molecules: {len(box._molecules)}")
+    print(f"Initial E_pot:        {box.total_epot:.5f}")
+    box.write_XYZ("data/config_init.xyz", mode="w")
 
+    # change these variables to increase accuracy
     T = 0.8
     zeta = 1.01
     n_eq = 1000
@@ -32,6 +46,8 @@ def main():
     for step in range(1, n_pr + 1):
         acceptance = mc.step()
         Epot = box.total_epot
+        len_x=5, len_y=40, len_z=5, den_liq=0.73, den_vap=0.02, potential=potential
+    )
 
         if step % log_interval == 0:
             # distortion that increases area
@@ -71,4 +87,5 @@ def main():
     )
 
 if __name__ == "__main__":
+
     main()
