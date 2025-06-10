@@ -46,8 +46,6 @@ def main():
     for step in range(1, n_pr + 1):
         acceptance = mc.step()
         Epot = box.total_epot
-        len_x=5, len_y=40, len_z=5, den_liq=0.73, den_vap=0.02, potential=potential
-    )
 
         if step % log_interval == 0:
             # distortion that increases area
