@@ -31,8 +31,8 @@ def run_with_orchestrator(config_file: str):
             len_x=setup["Lx"], 
             len_y=setup["Ly"], 
             len_z=setup["Lz"], 
-            den_liq=0.73,  # Default values, could be made configurable
-            den_vap=0.02,
+            den_liq=setup["compartments"][1]["density"],
+            den_vap=setup["compartments"][0]["density"],
             potential=potential
         )
         
