@@ -21,24 +21,6 @@ class Simulation(ABC):
         """
         pass
 
-    def run(self, n_steps: int, log_interval: int = 200, xyz_path: str = None):
-        """
-        Run the simulation for a specified number of steps, logging the potential energy 
-        and acceptance ratio at specified intervals.
-        """
-        for step in range(1, n_steps + 1):
-            acceptance = self.step()
-            output = f"Step {step}: Acceptance ratio: {acceptance:.3f}"
-            if self.log_energy:
-                output += f", Potential energy: {self.box._total_Epot:.3f}"
-            if step == 1 or step % log_interval == 0:
-                if xyz_path:
-                    self.box.write_XYZ(xyz_path, mode="a")
-                else:
-                    self.box.write_XYZ("data/trajectory.xyz", mode="a")
-                print(output)
-
-
 class MetropolisMC(Simulation):
     def __init__(self, box, T: float, b: float, *, log_energy: bool = True):
         super().__init__(box, log_energy=log_energy)
@@ -155,7 +137,7 @@ class Orchestrator:
             raise RuntimeError("Box must be setup before simulation. Call setup_box() first.")
         
         # Get maximum displacement from config
-        max_displacement = self.config.get("control_parameters", {}).get("maximum_displacement", 0.125)
+        max_displacement = self.config.get("control_parameters", {}).get("maximum_displacement")
         
         # Create simulation instance
         self.simulation = simulation_class(
@@ -165,10 +147,6 @@ class Orchestrator:
         )
     
     def run_simulation(self):
-        """Run the complete simulation based on configuration."""
-        if self.simulation is None:
-            raise RuntimeError("Simulation must be setup before running. Call setup_simulation() first.")
-        
         # Create data directory if it doesn't exist
         os.makedirs("data", exist_ok=True)
         
@@ -195,9 +173,8 @@ class Orchestrator:
             
             # Check if we need to reset sampling
             if step in reset_sampling_steps:
+                # TODO:  """Has to get implemented... ..."""
                 print(f"Resetting sampling at step {step}")
-                # Implementation depends on what "reset sampling" means in your context
-                # This could involve resetting energy counters, acceptance ratios, etc.
             
             # Perform one simulation step
             acceptance = self.simulation.step()
@@ -222,27 +199,9 @@ class Orchestrator:
         
         print("Simulation completed successfully!")
     
-    def get_config_value(self, *keys):
-        """
-        Get a configuration value using nested keys.
-        
-        Args:
-            *keys: Nested keys to access configuration value
-            
-        Returns:
-            Configuration value or None if not found
-        """
-        value = self.config
-        for key in keys:
-            if isinstance(value, dict) and key in value:
-                value = value[key]
-            else:
-                return None
-        return value
-    
     def print_config_summary(self):
         """Print a summary of the loaded configuration."""
-        print("=== Configuration Summary ===")
+        print("================== Configuration Summary ==================")
         print(f"Box size: {self.config['setup']['Lx']} x {self.config['setup']['Ly']} x {self.config['setup']['Lz']}")
         print(f"Total steps: {self.config['steps']['total']}")
         print(f"Console output frequency: {self.config['console_output']['frequency']}")
@@ -257,4 +216,4 @@ class Orchestrator:
         if self.config["steps"].get("reset_sampling_at"):
             print(f"Reset sampling at steps: {self.config['steps']['reset_sampling_at']}")
         
-        print("=============================")
+        print("==========================================================")
