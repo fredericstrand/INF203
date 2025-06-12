@@ -69,7 +69,7 @@ def run_with_orchestrator(config_file: str):
         sys.exit(1)
 
 
-def run_legacy_mode():
+def run_old():
     """Run simulation using the original legacy approach."""
     args = parseArgs()
     os.makedirs("data", exist_ok=True)
