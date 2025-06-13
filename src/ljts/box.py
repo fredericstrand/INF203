@@ -1,5 +1,7 @@
 import numpy as np
 from src.ljts.molecule import Molecule
+from collections import defaultdict
+import itertools
 
 
 class Box:
@@ -22,22 +24,6 @@ class Box:
         method for adding molecules to the box/system
         """
         self._molecules.append(mol)
-
-    def total_potential_energy(self):
-        """
-        calculating the total potential energy of all molecules withing the box/system by calculating the potential energy between molecule and the neighbors.
-        """
-        Epot = 0.0
-        N = len(self._molecules)
-
-        for i in range(N):
-            for j in range(i + 1, N):
-                pos_i = self._molecules[i].position
-                pos_j = self._molecules[j].position
-
-                Epot += self.potential.potential_energy(pos_i, pos_j, self._box_size)
-
-        self._total_Epot = Epot
 
     def _populate_box(self, den_liq, den_vap):
         """
@@ -69,6 +55,59 @@ class Box:
                 file.write(
                     f"C {mol._position[0]} {mol._position[1]} {mol._position[2]}\n"
                 )
+
+    def total_potential_energy(self):
+        """
+        Compute total potential energy using a 3D cell list.
+        """
+        cutoff = self.potential.cutoff
+        box_size = self._box_size
+        cell_size = cutoff
+        num_cells = np.floor(box_size / cell_size).astype(int)
+
+        # Build the cell list
+        cell_list = self._build_cell_list(num_cells, cell_size)
+
+        Epot = 0.0
+        for cell_index, particles in cell_list.items():
+            neighbor_cells = self._get_neighbor_cells(cell_index, num_cells)
+
+            for _, mol_i in enumerate(particles):
+                pos_i = mol_i.position
+                for neighbor_cell in neighbor_cells:
+                    for mol_j in cell_list.get(neighbor_cell, []):
+                        if mol_i is mol_j:
+                            continue  # Avoid self-interaction
+                        pos_j = mol_j.position
+
+                        Epot += self.potential.potential_energy(pos_i, pos_j, box_size)
+
+        # Dvide by 2 since each pair is calculated twice
+        self._total_Epot = 0.5 * Epot
+
+    def _build_cell_list(self, num_cells, cell_size):
+        """
+        Assign molecules to their respective cells in 3D space.
+        """
+        cell_list = defaultdict(list)
+        for mol in self._molecules:
+            pos = mol.position
+            cell_idx = tuple((pos / cell_size).astype(int) % num_cells)
+            cell_list[cell_idx].append(mol)
+        return cell_list
+
+    def _get_neighbor_cells(self, cell_idx, num_cells):
+        """
+        Returns a list of neighbor cell indices (including the cell itself).
+        Handles periodic boundary conditions.
+        """
+        neighbors = []
+
+        # Use itertools library to iterate over all the cells neighbors
+        for offset in itertools.product([-1, 0, 1], repeat=3):
+            neighbor = tuple((np.array(cell_idx) + offset) % num_cells)
+            neighbors.append(neighbor)
+        return neighbors
 
     @property
     def get_molecules(self):
