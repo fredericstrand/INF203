@@ -3,17 +3,27 @@ import numpy as np
 def compute_distortion(molecules, box_size, potential, sx, sy, sz):
     """
     Compute potential energy and interface area changes from volume-conserving box distortion.
-
-    Args:
-        molecules (list): List of Molecule objects containing position data.
-        box_size (numpy.ndarray): Original box dimensions [len_x, len_y, len_z].
-        potential (Potential): Potential energy function object for interactions.
-        sx (float): Scaling factor for x-dimension distortion.
-        sy (float): Scaling factor for y-dimension distortion.
-        sz (float): Scaling factor for z-dimension distortion.
-
-    Returns:
-        tuple: (delta_U, delta_A) where delta_U is potential energy change and delta_A is interface area change.
+    
+    Parameters
+    ----------
+    molecules : list
+        List of Molecule objects containing position data
+    box_size : numpy.ndarray
+        Original box dimensions [len_x, len_y, len_z]
+    potential : Potential
+        Potential energy function object for interactions
+    sx : float
+        Scaling factor for x-dimension distortion
+    sy : float
+        Scaling factor for y-dimension distortion
+    sz : float
+        Scaling factor for z-dimension distortion
+        
+    Returns
+    -------
+    tuple
+        (delta_U, delta_A) where delta_U is potential energy change and 
+        delta_A is interface area change
     """
     # Undistorted energy
     E0 = 0.0

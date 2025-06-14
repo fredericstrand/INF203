@@ -5,20 +5,52 @@ import itertools
 
 
 class Box:
+    """
+    A class used to represent a simulation box containing molecules
+    
+    ...
+    
+    Attributes
+    ----------
+    potential : object
+        the potential energy calculation object
+    get_molecules : list
+        list of all molecules in the box
+    total_epot : float
+        the total potential energy of the system
+    num_molecules : int
+        the number of molecules in the box
+    box_size : numpy.ndarray
+        the dimensions of the box [len_x, len_y, len_z]
+    
+    Methods
+    -------
+    add_molecule(mol)
+        Adds a molecule to the box/system
+    write_XYZ(path, mode="w")
+        Writes molecular positions to XYZ file format
+    total_potential_energy()
+        Computes total potential energy using a 3D cell list
+    """
+    
     def __init__(self, len_x, len_y, len_z, den_liq=None, den_vap=None, potential=None):
         """
-        Initialize the box container for molecules and generate initial distribution.
-
-        Args:
-            len_x (float): Box dimension in x-direction.
-            len_y (float): Box dimension in y-direction.
-            len_z (float): Box dimension in z-direction.
-            den_liq (float, optional): Liquid density for population. Defaults to None.
-            den_vap (float, optional): Vapor density for population. Defaults to None.
-            potential (Potential, optional): Potential energy function object. Defaults to None.
-
-        Returns:
-            None
+        Initialize the box class that will contain all the molecules and generate the distribution.
+        
+        Parameters
+        ----------
+        len_x : float
+            Length of the box in x dimension
+        len_y : float
+            Length of the box in y dimension
+        len_z : float
+            Length of the box in z dimension
+        den_liq : float, optional
+            Liquid density for population (default is None)
+        den_vap : float, optional
+            Vapor density for population (default is None)
+        potential : object, optional
+            Potential energy calculation object (default is None)
         """
         self._box_size = np.array([len_x, len_y, len_z])
         self._molecules = []
@@ -32,26 +64,27 @@ class Box:
 
     def add_molecule(self, mol):
         """
-        Add a single molecule to the box system.
-
-        Args:
-            mol (Molecule): Molecule object to be added to the system.
-
-        Returns:
-            None
+        Add a molecule to the box/system.
+        
+        Parameters
+        ----------
+        mol : Molecule
+            The molecule object to add to the system
         """
         self._molecules.append(mol)
 
     def _populate_box(self, den_liq, den_vap):
         """
-        Populate the box with molecules distributed across vapor-liquid zones.
-
-        Args:
-            den_liq (float): Liquid phase density for molecule distribution.
-            den_vap (float): Vapor phase density for molecule distribution.
-
-        Returns:
-            None
+        Populate the box/system by creating a distribution of molecules within different zones.
+        
+        Uses list comprehension for better readability. 'map()' would likely be more efficient.
+        
+        Parameters
+        ----------
+        den_liq : float
+            Liquid density for molecular distribution
+        den_vap : float
+            Vapor density for molecular distribution
         """
         len_x, len_y, len_z = self._box_size
         vol = len_x * len_y * len_z
@@ -71,14 +104,14 @@ class Box:
 
     def write_XYZ(self, path, mode="w"):
         """
-        Write molecular positions to XYZ format file.
-
-        Args:
-            path (str): File path for output XYZ file.
-            mode (str, optional): File write mode. Defaults to "w".
-
-        Returns:
-            None
+        Write molecular positions to XYZ file format.
+        
+        Parameters
+        ----------
+        path : str
+            File path for output XYZ file
+        mode : str, optional
+            File write mode (default is "w")
         """
         with open(path, mode) as file:
             file.write(f"{len(self._molecules)}\n")
@@ -90,13 +123,7 @@ class Box:
 
     def total_potential_energy(self):
         """
-        Compute total potential energy using 3D cell list optimization.
-
-        Args:
-            None
-
-        Returns:
-            None
+        Compute total potential energy using a 3D cell list.
         """
         cutoff = self.potential.cutoff
         box_size = self._box_size
@@ -125,14 +152,19 @@ class Box:
 
     def _build_cell_list(self, num_cells, cell_size):
         """
-        Assign molecules to their respective cells in 3D space for neighbor search.
-
-        Args:
-            num_cells (numpy.ndarray): Number of cells in each dimension.
-            cell_size (float): Size of each cell for spatial partitioning.
-
-        Returns:
-            defaultdict: Dictionary mapping cell indices to lists of molecules.
+        Assign molecules to their respective cells in 3D space.
+        
+        Parameters
+        ----------
+        num_cells : numpy.ndarray
+            Number of cells in each dimension
+        cell_size : float
+            Size of each cell
+            
+        Returns
+        -------
+        defaultdict
+            Dictionary mapping cell indices to lists of molecules
         """
         cell_list = defaultdict(list)
         for mol in self._molecules:
@@ -143,18 +175,25 @@ class Box:
 
     def _get_neighbor_cells(self, cell_idx, num_cells):
         """
-        Generate neighbor cell indices including periodic boundary conditions.
-
-        Args:
-            cell_idx (tuple): Current cell index coordinates.
-            num_cells (numpy.ndarray): Total number of cells in each dimension.
-
-        Returns:
-            list: List of neighboring cell indices including the current cell.
+        Get a list of neighbor cell indices including the cell itself.
+        
+        Handles periodic boundary conditions using itertools library to iterate 
+        over all the cell's neighbors.
+        
+        Parameters
+        ----------
+        cell_idx : tuple
+            Index of the current cell
+        num_cells : numpy.ndarray
+            Number of cells in each dimension
+            
+        Returns
+        -------
+        list
+            List of neighbor cell indices (tuples)
         """
         neighbors = []
 
-        # Use itertools library to iterate over all the cells neighbors
         for offset in itertools.product([-1, 0, 1], repeat=3):
             neighbor = tuple((np.array(cell_idx) + offset) % num_cells)
             neighbors.append(neighbor)
@@ -163,13 +202,12 @@ class Box:
     @property
     def get_molecules(self):
         """
-        Access the list of molecules in the box.
-
-        Args:
-            None
-
-        Returns:
-            list: List of Molecule objects in the system.
+        Access the list of all molecules in the box.
+        
+        Returns
+        -------
+        list
+            List of Molecule objects in the system
         """
         return self._molecules
 
@@ -177,37 +215,34 @@ class Box:
     def total_epot(self):
         """
         Access the total potential energy of the system.
-
-        Args:
-            None
-
-        Returns:
-            float: Total potential energy value.
+        
+        Returns
+        -------
+        float
+            Total potential energy
         """
         return self._total_Epot
 
     @property
     def num_molecules(self) -> int:
         """
-        Get the number of molecules in the box.
-
-        Args:
-            None
-
-        Returns:
-            int: Total count of molecules in the system.
+        Access the number of molecules in the box.
+        
+        Returns
+        -------
+        int
+            Number of molecules in the system
         """
         return len(self._molecules)
 
     @property
     def box_size(self):
         """
-        Access the box dimensions.
-
-        Args:
-            None
-
-        Returns:
-            numpy.ndarray: Array containing box dimensions [len_x, len_y, len_z].
+        Access the dimensions of the simulation box.
+        
+        Returns
+        -------
+        numpy.ndarray
+            Box dimensions [len_x, len_y, len_z]
         """
         return self._box_size

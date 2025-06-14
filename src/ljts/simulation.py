@@ -3,19 +3,35 @@ import numpy as np
 
 class Simulation(ABC):
     """
-    Abstract base class for Monte Carlo simulations with energy logging capabilities.
+    Abstract base class for Monte Carlo simulations with energy logging capabilities
+    
+    ...
+    
+    Attributes
+    ----------
+    box : Box
+        the box object containing molecules and potential energy functions
+    log_energy : bool
+        flag to enable potential energy logging
+    
+    Methods
+    -------
+    step()
+        Execute single Monte Carlo step with acceptance ratio calculation
+    run(n_steps, log_interval=200, xyz_path=None)
+        Execute simulation for specified steps with periodic logging and trajectory output
     """
     
     def __init__(self, box, log_energy: bool = True):
         """
         Initialize simulation with box system and logging configuration.
 
-        Args:
-            box (Box): Box object containing molecules and potential energy functions.
-            log_energy (bool, optional): Flag to enable potential energy logging. Defaults to True.
-
-        Returns:
-            None
+        Parameters
+        ----------
+        box : Box
+            Box object containing molecules and potential energy functions
+        log_energy : bool, optional
+            Flag to enable potential energy logging (default is True)
         """
         self.box = box
         self.log_energy = log_energy
@@ -25,11 +41,10 @@ class Simulation(ABC):
         """
         Execute single Monte Carlo step with acceptance ratio calculation.
 
-        Args:
-            None
-
-        Returns:
-            float: Acceptance ratio for the Monte Carlo step.
+        Returns
+        -------
+        float
+            Acceptance ratio for the Monte Carlo step
         """
         pass
 
@@ -37,13 +52,14 @@ class Simulation(ABC):
         """
         Execute simulation for specified steps with periodic logging and trajectory output.
 
-        Args:
-            n_steps (int): Total number of Monte Carlo steps to perform.
-            log_interval (int, optional): Interval for logging and XYZ output. Defaults to 200.
-            xyz_path (str, optional): Path for XYZ trajectory file output. Defaults to None.
-
-        Returns:
-            None
+        Parameters
+        ----------
+        n_steps : int
+            Total number of Monte Carlo steps to perform
+        log_interval : int, optional
+            Interval for logging and XYZ output (default is 200)
+        xyz_path : str, optional
+            Path for XYZ trajectory file output (default is None)
         """
         for step in range(1, n_steps + 1):
             acceptance = self.step()
@@ -55,18 +71,42 @@ class Simulation(ABC):
                 print(output)
 
 class MetropolisMC(Simulation):
+    """
+    Metropolis Monte Carlo simulation implementation
+    
+    ...
+    
+    Attributes
+    ----------
+    box : Box
+        the box object containing molecules and potential energy functions
+    log_energy : bool
+        flag to enable potential energy logging
+    T : float
+        temperature for Metropolis acceptance criterion
+    b : float
+        maximum displacement distance for random moves
+    
+    Methods
+    -------
+    step()
+        Perform single Metropolis Monte Carlo step with trial moves for all molecules
+    """
+    
     def __init__(self, box, T: float, b: float, *, log_energy: bool = True):
         """
         Initialize Metropolis Monte Carlo simulation with temperature and displacement parameters.
 
-        Args:
-            box (Box): Box object containing molecules and potential energy functions.
-            T (float): Temperature for Metropolis acceptance criterion.
-            b (float): Maximum displacement distance for random moves.
-            log_energy (bool, optional): Flag to enable potential energy logging. Defaults to True.
-
-        Returns:
-            None
+        Parameters
+        ----------
+        box : Box
+            Box object containing molecules and potential energy functions
+        T : float
+            Temperature for Metropolis acceptance criterion
+        b : float
+            Maximum displacement distance for random moves
+        log_energy : bool, optional
+            Flag to enable potential energy logging (default is True)
         """
         super().__init__(box, log_energy=log_energy)
         self.T = T
@@ -76,11 +116,10 @@ class MetropolisMC(Simulation):
         """
         Perform single Metropolis Monte Carlo step with trial moves for all molecules.
 
-        Args:
-            None
-
-        Returns:
-            float: Acceptance ratio for the Monte Carlo step (accepted moves / total moves).
+        Returns
+        -------
+        float
+            Acceptance ratio for the Monte Carlo step (accepted moves / total moves)
         """
         accepted = 0
         N = len(self.box._molecules)
