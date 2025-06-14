@@ -7,7 +7,18 @@ import itertools
 class Box:
     def __init__(self, len_x, len_y, len_z, den_liq=None, den_vap=None, potential=None):
         """
-        initializing the box class that will contain all the molecules. and will also generate the distrobution
+        Initialize the box container for molecules and generate initial distribution.
+
+        Args:
+            len_x (float): Box dimension in x-direction.
+            len_y (float): Box dimension in y-direction.
+            len_z (float): Box dimension in z-direction.
+            den_liq (float, optional): Liquid density for population. Defaults to None.
+            den_vap (float, optional): Vapor density for population. Defaults to None.
+            potential (Potential, optional): Potential energy function object. Defaults to None.
+
+        Returns:
+            None
         """
         self._box_size = np.array([len_x, len_y, len_z])
         self._molecules = []
@@ -21,15 +32,26 @@ class Box:
 
     def add_molecule(self, mol):
         """
-        method for adding molecules to the box/system
+        Add a single molecule to the box system.
+
+        Args:
+            mol (Molecule): Molecule object to be added to the system.
+
+        Returns:
+            None
         """
         self._molecules.append(mol)
 
     def _populate_box(self, den_liq, den_vap):
         """
-        function for populating the box/system by taking the parameters defined in main script and from that creating a distrobution of molecules within the different zones
+        Populate the box with molecules distributed across vapor-liquid zones.
 
-        We used 'map()' to add the moleulces in worksheet 1, but opted for a list comprehension for better readability. 'map()' would likely be more efficient.
+        Args:
+            den_liq (float): Liquid phase density for molecule distribution.
+            den_vap (float): Vapor phase density for molecule distribution.
+
+        Returns:
+            None
         """
         len_x, len_y, len_z = self._box_size
         vol = len_x * len_y * len_z
@@ -48,6 +70,16 @@ class Box:
             self._molecules.extend([Molecule(pos) for pos in pos])
 
     def write_XYZ(self, path, mode="w"):
+        """
+        Write molecular positions to XYZ format file.
+
+        Args:
+            path (str): File path for output XYZ file.
+            mode (str, optional): File write mode. Defaults to "w".
+
+        Returns:
+            None
+        """
         with open(path, mode) as file:
             file.write(f"{len(self._molecules)}\n")
             file.write(f"#\n")
@@ -58,7 +90,13 @@ class Box:
 
     def total_potential_energy(self):
         """
-        Compute total potential energy using a 3D cell list.
+        Compute total potential energy using 3D cell list optimization.
+
+        Args:
+            None
+
+        Returns:
+            None
         """
         cutoff = self.potential.cutoff
         box_size = self._box_size
@@ -82,12 +120,19 @@ class Box:
 
                         Epot += self.potential.potential_energy(pos_i, pos_j, box_size)
 
-        # Dvide by 2 since each pair is calculated twice
+        # Divide by 2 since each pair is calculated twice
         self._total_Epot = 0.5 * Epot
 
     def _build_cell_list(self, num_cells, cell_size):
         """
-        Assign molecules to their respective cells in 3D space.
+        Assign molecules to their respective cells in 3D space for neighbor search.
+
+        Args:
+            num_cells (numpy.ndarray): Number of cells in each dimension.
+            cell_size (float): Size of each cell for spatial partitioning.
+
+        Returns:
+            defaultdict: Dictionary mapping cell indices to lists of molecules.
         """
         cell_list = defaultdict(list)
         for mol in self._molecules:
@@ -98,8 +143,14 @@ class Box:
 
     def _get_neighbor_cells(self, cell_idx, num_cells):
         """
-        Returns a list of neighbor cell indices (including the cell itself).
-        Handles periodic boundary conditions.
+        Generate neighbor cell indices including periodic boundary conditions.
+
+        Args:
+            cell_idx (tuple): Current cell index coordinates.
+            num_cells (numpy.ndarray): Total number of cells in each dimension.
+
+        Returns:
+            list: List of neighboring cell indices including the current cell.
         """
         neighbors = []
 
@@ -111,16 +162,52 @@ class Box:
 
     @property
     def get_molecules(self):
+        """
+        Access the list of molecules in the box.
+
+        Args:
+            None
+
+        Returns:
+            list: List of Molecule objects in the system.
+        """
         return self._molecules
 
     @property
     def total_epot(self):
+        """
+        Access the total potential energy of the system.
+
+        Args:
+            None
+
+        Returns:
+            float: Total potential energy value.
+        """
         return self._total_Epot
 
     @property
     def num_molecules(self) -> int:
+        """
+        Get the number of molecules in the box.
+
+        Args:
+            None
+
+        Returns:
+            int: Total count of molecules in the system.
+        """
         return len(self._molecules)
 
     @property
     def box_size(self):
+        """
+        Access the box dimensions.
+
+        Args:
+            None
+
+        Returns:
+            numpy.ndarray: Array containing box dimensions [len_x, len_y, len_z].
+        """
         return self._box_size

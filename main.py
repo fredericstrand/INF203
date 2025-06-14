@@ -21,7 +21,7 @@ def main():
         potential=potential
     )
     
-    # parameters you might even pull from args
+    # Parameters you might even pull from args
     T            = 0.8
     zeta         = 1.01
     n_eq         = 1000
@@ -38,7 +38,7 @@ def main():
         f.write(f"log_interval= {log_interval}\n")
         f.write("\n# step  Epot    acc    e1      avg1    gamma1   e2      avg2    gamma2\n")
         
-        # initial epot
+        # Initial epot
         f.write(f"initial  {box.total_epot:.5f}  -      -       -       -       -       -      -\n")
         
         # Run MC and log into file
