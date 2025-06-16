@@ -1,4 +1,4 @@
-from src.ljts.potential import LJTS
+from ljts.potential import LJTS
 import pytest
 import numpy as np
 

@@ -1,5 +1,5 @@
 import numpy as np
-from src.ljts.molecule import Molecule
+from ljts.molecule import Molecule
 from collections import defaultdict
 import itertools
 
@@ -60,6 +60,8 @@ class Box:
         """
         Compute total potential energy using a 3D cell list.
         """
+        if self.potential is None:
+            raise ValueError("Not defined a potential method.")
         cutoff = self.potential.cutoff
         box_size = self._box_size
         cell_size = cutoff
