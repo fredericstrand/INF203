@@ -9,7 +9,7 @@ class Box:
         """
         initializing the box class that will contain all the molecules. and will also generate the distrobution
         """
-        self._box_size = np.array([len_x, len_y, len_z])
+        self._box_size = np.array([abs(len_x), abs(len_y), abs(len_z)])
         self._molecules = []
         self.potential = potential
 
@@ -25,7 +25,7 @@ class Box:
         """
         self._molecules.append(mol)
 
-    def _populate_box(self, den_liq, den_vap):
+    def populate_box(self, den_liq, den_vap):
         """
         function for populating the box/system by taking the parameters defined in main script and from that creating a distrobution of molecules within the different zones
 
