@@ -128,7 +128,33 @@ class MetropolisMC(Simulation):
             energy_before_move = sum(energies_before)
 
             # Perform a random trial move
+            
+            # Calculate before the move
+            energies_before = []
+            for other in self.box.get_molecules:
+                if other is not mol:
+                    energy = self.box.potential.potential_energy(
+                        mol.position, other.position, self.box.box_size
+                    )
+                    energies_before.append(energy)
+            energy_before_move = sum(energies_before)
+
+            # Perform a random trial move
             mol.move_random(self.b, self.box.box_size)
+
+            # Calculate after the move
+            energies_after = []
+            for other in self.box.get_molecules:
+                if other is not mol:
+                    energy = self.box.potential.potential_energy(
+                        mol.alt_position, other.position, self.box.box_size
+                    )
+                    energies_after.append(energy)
+            energy_after_move = sum(energies_after)
+
+            # Compute the change in potential energy
+            delta_E = energy_after_move - energy_before_move
+
 
             # Calculate after the move
             energies_after = []
@@ -482,3 +508,111 @@ class SimulationFactory:
     
 
     
+
+
+class SimulationFactory:
+    """
+    Factory class for registering and creating Simulation instances.
+    
+    The SimulationFactory implements the factory design pattern to provide
+    a centralized registry for different simulation types. It allows dynamic
+    registration of simulation classes and creation of simulation instances
+    by name, promoting modularity and extensibility in the simulation framework.
+    
+    Attributes
+    ----------
+    _types : dict
+        Dictionary mapping simulation type names to their corresponding classes
+    
+    Methods
+    -------
+    register(name, simulation_class)
+        Register a new simulation class with a given name
+    __call__(name, **kwargs)
+        Create and return a simulation instance of the specified type
+    """
+    
+    def __init__(self) -> None:
+        """
+        Initialize the simulation factory with an empty registry.
+        
+        Creates an empty dictionary to store the mapping between
+        simulation type names and their corresponding classes.
+        """
+        self._types = {}
+
+    def register(self, name: str, simulation_class: type) -> None:
+        """
+        Register a simulation class with the factory under a given name.
+        
+        Adds a new simulation class to the factory registry, allowing it
+        to be instantiated later using the provided name. The class must
+        inherit from the Simulation base class.
+        
+        Parameters
+        ----------
+        name : str
+            The name identifier for the simulation type
+        simulation_class : type
+            The simulation class to register, must inherit from Simulation
+            
+        Raises
+        ------
+        TypeError
+            If the provided class does not inherit from Simulation
+        """
+        if not issubclass(simulation_class, Simulation):
+            raise TypeError(f"{simulation_class} must inherit from Simulation")
+        self._types[name] = simulation_class
+
+    def __call__(self, name: str, **kwargs: Any) -> Simulation:
+        """
+        Create and return a simulation instance of the specified type.
+        
+        Instantiates a simulation object using the class registered under
+        the given name, passing all keyword arguments to the constructor.
+        This method makes the factory instance callable.
+        
+        Parameters
+        ----------
+        name : str
+            The name of the registered simulation type to create
+        **kwargs
+            Keyword arguments to pass to the simulation constructor
+            
+        Returns
+        -------
+        Simulation
+            An instance of the requested simulation type
+            
+        Raises
+        ------
+        KeyError
+            If the requested simulation type name is not registered
+        """
+        if name not in self._types:
+            raise KeyError(f"Unknown simulation type: {name}")
+
+        return self._types[name](**kwargs)
+
+    
+
+    
+
+
+class SimulationFactory:
+    """
+    Factory to register and create Potential instances.
+    """
+    def __init__(self):
+        self._types = {}
+
+    def register(self, name: str, potential_class: type):
+        if not issubclass(simulation_class, Simulation):
+            raise TypeError(f"{simulation_class} must inherit from Potential")
+        self._types[name] = simulation_class
+
+    def __call__(self, name: str, **kwargs) -> Simulation:
+        if name not in self._types:
+            raise KeyError(f"Unknown potential type: {name}")
+        return self._types[name](**kwargs)
