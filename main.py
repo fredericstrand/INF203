@@ -3,10 +3,11 @@ import os
 import json
 import numpy as np
 
-from src.ljts.potential    import LJTS
-from src.ljts.box          import Box
+from src.ljts.potential import LJTS
+from src.ljts.box import Box
 from src.ljts.orchestrator import Orchestrator, MetropolisMC
-from src.ljts.distortion   import compute_distortion
+from src.ljts.distortion import compute_distortion
+from src.ljts.plotting import plot_energy_and_gamma
 
 
 def run_with_orchestrator(config_file: str):
@@ -174,6 +175,9 @@ def run_with_orchestrator(config_file: str):
         print("\n=== Final Results ===")
         print(f"Final E_pot:        {box.total_epot:.5f}")
         print(f"Total # molecules:  {len(box._molecules)}")
+
+    # Plot the curves for energy and surface tension
+    plot_energy_and_gamma(log_fname)
 
     except FileNotFoundError as e:
         print(f"Error: {e}", file=sys.stderr)
