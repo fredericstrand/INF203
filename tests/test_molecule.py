@@ -1,4 +1,4 @@
-from ljts.molecule import Molecule
+from src.ljts.molecule import Molecule
 import numpy as np
 import pytest
 

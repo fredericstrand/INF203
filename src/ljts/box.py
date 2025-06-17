@@ -1,5 +1,5 @@
 import numpy as np
-from ljts.molecule import Molecule
+from src.ljts.molecule import Molecule
 from collections import defaultdict
 import itertools
 
@@ -14,7 +14,7 @@ class Box:
         self.potential = potential
 
         if den_liq is not None and den_vap is not None:
-            self._populate_box(den_liq, den_vap)
+            self.populate_box(den_liq, den_vap)
 
         self._total_Epot = 0.0
         self.total_potential_energy()
