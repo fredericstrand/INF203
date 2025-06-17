@@ -1,0 +1,12 @@
+# Simulation Parameters
+# Box dimensions: 5 x 40 x 5
+# Temperature: 0.8
+# Total steps: 100000
+# Log interval: 200
+# Max displacement: 0.125
+# Distortions (d1, d2): {'sx': 0.999995, 'sy': 1.00001, 'sz': 0.999995}, {'sx': 1.000005, 'sy': 0.99999, 'sz': 1.000005}
+# Reset sampling at: [40, 10000, 20000]
+# Console freq: 50
+# Trajectory freq/file: 200/data/vle-0.80-reference_trajectory.xyz
+
+# step   E_pot     acc     e1        avg1      gamma1    e2        avg2      gamma2
