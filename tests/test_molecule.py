@@ -14,7 +14,9 @@ def test_position():
     "invalid_position", [[1.0, 2.0], [1.0], [], [1.0, 2.0, 3.0, 4.0]]
 )
 def test_position_dimension(invalid_position):
-    with pytest.raises(ValueError, match="must be 3D"):
+    with pytest.raises(
+        ValueError, match="Position must be a 3D vector with three components."
+    ):
         Molecule(invalid_position)
 
 
