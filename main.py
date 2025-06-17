@@ -104,6 +104,10 @@ def run_with_orchestrator(config_file: str):
                 acc  = mc.step()
                 Epot = box.total_epot
 
+                if step in reset_points:
+                    exp_s1.clear()
+                    exp_s2.clear()
+
                 # Console output
                 if console_freq and (step % console_freq == 0):
                     print(f"Step {step}: E_pot={Epot:.3f}, acc={acc:.3f}")
