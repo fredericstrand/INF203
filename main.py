@@ -209,6 +209,9 @@ def run_with_orchestrator(config_file: str):
         print(f"Final E_pot:        {box.total_epot:.5f}")
         print(f"Total # molecules:  {len(box._molecules)}")
 
+    # Plot the curves for energy and surface tension
+    plot_energy_and_gamma(log_fname)
+
     except FileNotFoundError as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
