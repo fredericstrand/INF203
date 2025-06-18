@@ -8,6 +8,7 @@ from src.ljts.box import Box
 from src.ljts.orchestrator import Orchestrator, MetropolisMC
 from src.ljts.distortion import compute_distortion
 from src.ljts.plotting import plot_energy_and_gamma
+from src.config import parseArgs
 
 
 def run_with_orchestrator(config_file: str):
@@ -188,13 +189,14 @@ def run_with_orchestrator(config_file: str):
 
 
 def main():
-    if len(sys.argv) == 2 and sys.argv[1].endswith('.json'):
-        print(f"Running with JSON configuration: {sys.argv[1]}")
-        run_with_orchestrator(sys.argv[1])
-    else:
-        print("Usage: python main.py <config.json>", file=sys.stderr)
-        sys.exit(1)
-
+    args = parseArgs()
+    config_file = args.file
+    log_file = args.log
+    
+    print(f"Running with JSON configuration: {config_file}")
+    print(f"Logging to: {log_file}")
+    
+    run_with_orchestrator(config_file)
 
 if __name__ == "__main__":
     main()
