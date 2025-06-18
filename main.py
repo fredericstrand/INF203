@@ -2,7 +2,7 @@ import sys
 from src.ljts.potential import LJTS
 from src.ljts.box import Box
 from src.ljts.orchestrator import Orchestrator, MetropolisMC
-from src.config import parseArgs  # import the argparse function
+from src.config import parseArgs
 
 
 def run_with_orchestrator(config_file: str):
