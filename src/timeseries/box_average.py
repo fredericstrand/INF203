@@ -3,35 +3,30 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def box_average(
-    path, block_size=50, z=1.96, skiprow=12, plot=False, wanted_col="E_pot"
-):
+def line_average(path, z=1.96, skiprow=12, plot=False, wanted_col="E_pot"):
     """
-    Calculates the block-averaged mean and confidence interval from simulation data
-
-    ...
+    Calculates the mean and confidence interval given 1 line=1 "block" as file is already only done every 50 or so.
 
     Parameters
     ----------
     path : str
         Path to the log file containing data
-    block_size : int, optional
-        Number of samples per block for averaging (default is 50)
     z : float, optional
-        Z-score for desired confidence interval (default is 1.96, corresponding to 95%)
+        Z-score for desired confidence interval (default is 1.96, 95%).
     skiprow : int, optional
         Number of lines to skip before the table starts (default is 12)
     plot : bool, optional
-        Whether to show a histogram of block means (default is False)
+        Whether to show a histogram of the values (default is False)
+    wanted_col : str
+        Name of the column to analyze (default is 'E_pot')
 
     Returns
     -------
     mean : float
-        The total average mean of the blocks of the wanted column
+        Mean of the selected column
     ci : float
-        confidence interval for the mean and z value
+       confidence interval
     """
-
     with open(path, "r") as f:
         lines = f.readlines()
     column_names = lines[skiprow - 1].strip("#").strip().split()
@@ -41,14 +36,19 @@ def box_average(
     )
 
     data = df[wanted_col].to_numpy()
-    n_blocks = len(data) // block_size
-    blocks = data[: n_blocks * block_size].reshape(n_blocks, block_size)
-
-    means = blocks.mean(axis=1)
-    mean = means.mean()
-    stde = means.std(ddof=1) / np.sqrt(n_blocks)
+    mean = np.mean(data)
+    stde = np.std(data) / np.sqrt(len(data))
     ci = z * stde
+
     if plot:
-        plt.hist(means, bins=50, label="Block means")
+        plt.hist(data, bins=len(data))
+        plt.axvline(
+            mean,
+            color="red",
+            linestyle="--",
+        )
+        plt.axvline(mean - ci, color="gray", linestyle="--")
+        plt.axvline(mean + ci, color="gray", linestyle="--")
+        plt.show()
 
     return mean, ci
