@@ -33,25 +33,33 @@ class MetropolisMC(Simulation):
         for i in range(N):
             idx = np.random.randint(N)
             mol = self.box._molecules[idx]
-            # Calculate potential energy before moving
-            old_E = sum(
-                self.box.potential.potential_energy(
-                    mol.position, other.position, self.box.box_size
-                )
-                for other in self.box.get_molecules
-                if other is not mol
-            )
-            # trial move
+            
+            # Calculate before the move
+            energies_before = []
+            for other in self.box.get_molecules:
+                if other is not mol:
+                    energy = self.box.potential.potential_energy(
+                        mol.position, other.position, self.box.box_size
+                    )
+                    energies_before.append(energy)
+            energy_before_move = sum(energies_before)
+
+            # Perform a random trial move
             mol.move_random(self.b, self.box.box_size)
-            # new energy with the trial position
-            new_E = sum(
-                self.box.potential.potential_energy(
-                    mol.alt_position, other.position, self.box.box_size
-                )
-                for other in self.box.get_molecules
-                if other is not mol
-            )
-            delta_E = new_E - old_E
+
+            # Calculate after the move
+            energies_after = []
+            for other in self.box.get_molecules:
+                if other is not mol:
+                    energy = self.box.potential.potential_energy(
+                        mol.alt_position, other.position, self.box.box_size
+                    )
+                    energies_after.append(energy)
+            energy_after_move = sum(energies_after)
+
+            # Compute the change in potential energy
+            delta_E = energy_after_move - energy_before_move
+
             # Accept or reject the move based on Metropolis criterion
             if delta_E < 0 or np.random.rand() < np.exp(-delta_E / self.T):
                 mol.position = np.copy(mol.alt_position)
@@ -217,3 +225,21 @@ class Orchestrator:
             print(f"Reset sampling at steps: {self.config['steps']['reset_sampling_at']}")
         
         print("==========================================================")
+
+
+class SimulationFactory:
+    """
+    Factory to register and create Potential instances.
+    """
+    def __init__(self):
+        self._types = {}
+
+    def register(self, name: str, potential_class: type):
+        if not issubclass(simulation_class, Simulation):
+            raise TypeError(f"{simulation_class} must inherit from Potential")
+        self._types[name] = simulation_class
+
+    def __call__(self, name: str, **kwargs) -> Simulation:
+        if name not in self._types:
+            raise KeyError(f"Unknown potential type: {name}")
+        return self._types[name](**kwargs)
