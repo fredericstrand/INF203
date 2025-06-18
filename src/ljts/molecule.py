@@ -2,54 +2,125 @@ import numpy as np
 
 
 class Molecule:
-    def __init__(self, position):
+    """
+    A class used to represent a molecule in a molecular simulation.
+    
+    The Molecule class handles position management for molecular dynamics
+    simulations, including a main position and an alternative position for
+    trial moves in Monte Carlo algorithms like Metropolis sampling.
+    
+    Attributes
+    ----------
+    _position : numpy.ndarray
+        The current accepted position of the molecule as a 3D vector
+    _alt_position : numpy.ndarray
+        The alternative/trial position used during simulation moves
+    
+    Methods
+    -------
+    reset_alt_position()
+        Resets the alternative position to match the current position
+    move_random(b, box_size)
+        Performs a random displacement move within specified bounds
+    """
+    
+    def __init__(self, position: np.ndarray) -> None:
         """
-        initializing the class  with positional arrays from argument from box class in the method populate box
-
-        it also checks if the position is the correct length (x,y,z) for error handling
-        also added data encapsulation
-
-        _position is the "main" position and will get updated if the metroplis algorithm succeeds or the potential energy decreases
-        _alt_position is the "temperary" position that will be used in the simulation
+        Initialize the Molecule with a 3D position.
+        
+        Sets up both the main position and alternative position with the same
+        initial coordinates. The main position represents the accepted state,
+        while the alternative position is used for trial moves in simulations.
+        
+        Parameters
+        ----------
+        position : np.ndarray
+            Initial 3D position as [x, y, z] coordinates
+            
+        Raises
+        ------
+        ValueError
+            If position is not a 3D vector with exactly three components
         """
+
         if len(position) != 3:
-            raise ValueError("Position must be a 3D vector with three components.")
+            raise ValueError("Position must be a 3D vector with exactly three components.")
 
-        self._position = np.array(position)
-        self._alt_position = np.array(position)
-
-    def reset_alt_position(self):
+        self._position = position.copy()
+        self._alt_position = position.copy()
+    
+    def reset_alt_position(self) -> None:
         """
-        method for resetting the position if it fails and prior value is better
+        Reset the alternative position to match the current position.
+        
+        This method is typically called when a trial move is rejected
+        and the alternative position needs to be restored to the last
+        accepted configuration.
         """
         self._alt_position = np.copy(self._position)
-
-    def move_random(self, b, box_size):
+    
+    def move_random(self, b, box_size) -> None:
         """
-        moves the alternativ position randomly in a uniform way within the distance of b in all dimensions
+        Perform a random displacement move on the alternative position.
+        
+        Generates a uniform random displacement within the range [-b, b]
+        in all three dimensions and applies periodic boundary conditions
+        to keep the molecule within the simulation box.
+        
+        Parameters
+        ----------
+        b : float
+            Maximum displacement distance in each dimension
+        box_size : array_like
+            Dimensions of the simulation box as [len_x, len_y, len_z]
         """
         self._alt_position = (
             self._alt_position + np.random.uniform(-b, b, 3)
         ) % box_size
-
-    """ 
-    defined some getters and setters
     
-    getters for position and alternativ position
-    
-    a setter for position for modifying the position from outside of the class.
-    """
-
     @property
-    def position(self):
+    def position(self) -> np.ndarray:
+        """
+        Get the current accepted position of the molecule.
+        
+        Returns
+        -------
+        numpy.ndarray
+            Current position as a 3D vector [x, y, z]
+        """
         return self._position
-
+    
     @property
-    def alt_position(self):
+    def alt_position(self) -> np.ndarray:
+        """
+        Get the alternative/trial position of the molecule.
+        
+        Returns
+        -------
+        numpy.ndarray
+            Alternative position as a 3D vector [x, y, z]
+        """
         return self._alt_position
-
+    
     @position.setter
-    def position(self, new_position):
+    def position(self, new_position) -> None:
+        """
+        Set a new position for the molecule.
+        
+        Updates the main position of the molecule. This is typically used
+        to accept a trial move by setting the position to the alternative
+        position coordinates.
+        
+        Parameters
+        ----------
+        new_position : array_like
+            New 3D position as [x, y, z] coordinates
+            
+        Raises
+        ------
+        ValueError
+            If new_position is not a 3D vector with exactly three components
+        """
         if len(new_position) != 3:
             raise ValueError("New position must be a 3D vector with three components.")
         self._position = np.array(new_position)
