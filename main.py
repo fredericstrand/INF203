@@ -2,6 +2,7 @@ import sys
 from src.ljts.potential import LJTS
 from src.ljts.box import Box
 from src.ljts.orchestrator import Orchestrator, MetropolisMC
+from src.config import parseArgs  # import the argparse function
 
 
 def run_with_orchestrator(config_file: str):
@@ -57,11 +58,14 @@ def run_with_orchestrator(config_file: str):
 
 
 def main():
-    # Check if a JSON config file was provided as command line argument
-    if len(sys.argv) == 2 and sys.argv[1].endswith('.json'):
-        config_file = sys.argv[1]
-        print(f"Running with JSON configuration: {config_file}")
-        run_with_orchestrator(config_file)
+    args = parseArgs()
+    config_file = args.file
+    log_file = args.log
+    
+    print(f"Running with JSON configuration: {config_file}")
+    print(f"Logging to: {log_file}")
+    
+    run_with_orchestrator(config_file)
 
 
 if __name__ == "__main__":
