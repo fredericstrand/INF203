@@ -1,8 +1,6 @@
 import numpy as np
 from src.ljts.molecule import Molecule
-from collections import defaultdict
 from typing import Optional
-import itertools
 
 
 class Box:
@@ -79,6 +77,25 @@ class Box:
         """
         self._molecules.append(mol)
 
+    def total_potential_energy(self):
+        """
+        Calculate the total potential energy of all molecules in the system.
+        
+        Computes the potential energy by summing pairwise interactions
+        between all molecules in the box using the potential object.
+        """
+        Epot = 0.0
+        N = len(self._molecules)
+
+        for i in range(N):
+            for j in range(i + 1, N):
+                pos_i = self._molecules[i].position
+                pos_j = self._molecules[j].position
+
+                Epot += self.potential.potential_energy(pos_i, pos_j, self._box_size)
+
+        self._total_Epot = Epot
+
     def populate_box(self, den_liq: float, den_vap: float) -> None:
         """
         Populate the box with molecules using specified densities.
@@ -132,101 +149,6 @@ class Box:
                 file.write(
                     f"C {mol._position[0]} {mol._position[1]} {mol._position[2]}\n"
                 )
-
-    def total_potential_energy(self) -> None:
-        """
-        Compute total potential energy using a 3D cell list algorithm.
-        
-        Uses cell lists to efficiently calculate pairwise interactions between
-        molecules while avoiding redundant calculations through neighbor searching.
-        The total energy is divided by 2 since each pair is calculated twice.
-        
-        Raises
-        ------
-        ValueError
-            If no potential method has been defined for the box
-        """
-        if self.potential is None:
-            raise ValueError("Not defined a potential method.")
-        cutoff = self.potential.cutoff
-        box_size = self._box_size
-        cell_size = cutoff
-        num_cells = np.floor(box_size / cell_size).astype(int)
-
-        # Build the cell list
-        cell_list = self._build_cell_list(num_cells, cell_size)
-
-        Epot = 0.0
-        for cell_index, particles in cell_list.items():
-            neighbor_cells = self._get_neighbor_cells(cell_index, num_cells)
-
-            for _, mol_i in enumerate(particles):
-                pos_i = mol_i.position
-                for neighbor_cell in neighbor_cells:
-                    for mol_j in cell_list.get(neighbor_cell, []):
-                        if mol_i is mol_j:
-                            continue  # Avoid self-interaction
-                        pos_j = mol_j.position
-
-                        Epot += self.potential.potential_energy(pos_i, pos_j, box_size)
-
-        # Divide by 2 since each pair is calculated twice
-        self._total_Epot = 0.5 * Epot
-
-    def _build_cell_list(self, num_cells: np.ndarray, cell_size: float) -> dict:
-        """
-        Assign molecules to their respective cells in 3D space.
-        
-        Creates a cell list data structure where molecules are grouped by
-        their spatial location within the box for efficient neighbor searching.
-        
-        Parameters
-        ----------
-        num_cells : numpy.ndarray
-            Number of cells in each dimension [nx, ny, nz]
-        cell_size : float
-            Size of each cell (equal to the potential cutoff distance)
-            
-        Returns
-        -------
-        dict
-            Dictionary mapping cell indices to lists of molecules in that cell
-        """
-        cell_list = defaultdict(list)
-        for mol in self._molecules:
-            pos = mol.position
-            cell_idx = tuple((pos / cell_size).astype(int) % num_cells)
-            cell_list[cell_idx].append(mol)
-        return cell_list
-
-    def _get_neighbor_cells(self, cell_idx: tuple, num_cells: np.ndarray) -> list:
-        """
-        Get all neighbor cell indices including the cell itself.
-        
-        Uses itertools to generate all 27 neighboring cells (including the
-        central cell) in a 3D grid. Handles periodic boundary conditions
-        by using modulo arithmetic.
-        
-        Parameters
-        ----------
-        cell_idx : tuple
-            Index of the current cell as (i, j, k)
-        num_cells : numpy.ndarray
-            Number of cells in each dimension [nx, ny, nz]
-            
-        Returns
-        -------
-        list
-            List of neighbor cell indices as tuples
-        """
-        neighbors = []
-
-        # Use itertools library to iterate over all the cell's neighbors
-        for offset in itertools.product([-1, 0, 1], repeat=3):
-            neighbor = tuple((np.array(cell_idx) + offset) % num_cells)
-            neighbors.append(neighbor)
-
-        return neighbors
 
     @property
     def get_molecules(self) -> list:

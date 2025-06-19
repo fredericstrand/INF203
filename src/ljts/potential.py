@@ -61,7 +61,7 @@ class LJTS(Potential):
     potential_energy(pos_i, pos_j, box_size)
         Calculate LJTS potential energy between two molecules
     """
-    def __init__(self, cutoff: float = 2.5):
+    def __init__(self, cutoff: float = 2.5) -> None:
         """
         Initialize the LJTS potential with specified cutoff distance.
         
@@ -120,23 +120,83 @@ class LJTS(Potential):
 
 class Harmonic(Potential):
     """
-    Just example for showing how abstract methods work.
+    Harmonic potential implementation.
+    
+    Example class demonstrating how to inherit from the abstract Potential
+    base class.
     """
     pass
 
 class PotentialFactory:
     """
-    Factory to register and create Potential instances.
+    Factory class to register and create Potential instances.
+    
+    Provides a registry system for different potential types and allows
+    creation of potential objects by name with optional parameters.
+    
+    Attributes
+    ----------
+    _types : dict
+        Dictionary mapping potential names to their corresponding classes
+        
+    Methods
+    -------
+    register(name, potential_class)
+        Register a new potential type with the factory
+    __call__(name, **kwargs)
+        Create and return a potential instance by name
     """
     def __init__(self):
+        """
+        Initialize the PotentialFactory.
+        
+        Creates an empty registry for potential types.
+        """
         self._types = {}
 
-    def register(self, name: str, potential_class: type):
+    def register(self, name: str, potential_class: type) -> None:
+        """
+        Register a new potential type with the factory.
+        
+        Parameters
+        ----------
+        name : str
+            Name to associate with the potential class
+        potential_class : type
+            Class that inherits from Potential
+            
+        Raises
+        ------
+        TypeError
+            If potential_class does not inherit from Potential
+        """
         if not issubclass(potential_class, Potential):
             raise TypeError(f"{potential_class} must inherit from Potential")
+
         self._types[name] = potential_class
 
     def __call__(self, name: str, **kwargs) -> Potential:
+        """
+        Create and return a potential instance by name.
+        
+        Parameters
+        ----------
+        name : str
+            Name of the registered potential type
+        **kwargs
+            Keyword arguments to pass to the potential constructor
+            
+        Returns
+        -------
+        Potential
+            Instance of the requested potential type
+            
+        Raises
+        ------
+        KeyError
+            If the specified potential name is not registered
+        """
         if name not in self._types:
             raise KeyError(f"Unknown potential type: {name}")
+
         return self._types[name](**kwargs)
