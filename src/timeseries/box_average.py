@@ -1,9 +1,16 @@
+from typing import Optional
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def line_average(path, z=1.96, skiprow=12, plot=False, wanted_col="E_pot"):
+def line_average(
+        path: str, 
+        z: Optional[float] = 1.96, 
+        skiprow: int = 12, 
+        plot: Optional[bool] = False, 
+        wanted_col: str ="E_pot"
+    ):
     """
     Calculates the mean and confidence interval given 1 line=1 "block" as file is already only done every 50 or so.
 
@@ -13,7 +20,7 @@ def line_average(path, z=1.96, skiprow=12, plot=False, wanted_col="E_pot"):
         Path to the log file containing data
     z : float, optional
         Z-score for desired confidence interval (default is 1.96, 95%).
-    skiprow : int, optional
+    skiprow : int
         Number of lines to skip before the table starts (default is 12)
     plot : bool, optional
         Whether to show a histogram of the values (default is False)
@@ -36,7 +43,7 @@ def line_average(path, z=1.96, skiprow=12, plot=False, wanted_col="E_pot"):
     )
 
     data = df[wanted_col].to_numpy()
-    mean = np.mean(data)
+    mean = float(np.mean(data))
     stde = np.std(data) / np.sqrt(len(data))
     ci = z * stde
 

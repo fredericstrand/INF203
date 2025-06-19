@@ -2,7 +2,9 @@ from abc import ABC, abstractmethod
 import json
 import numpy as np
 import os
-from typing import Dict, Any, List
+from typing import Any, Dict, List, Optional
+
+from src.ljts.box import Box
 
 
 class Simulation(ABC):
@@ -26,7 +28,7 @@ class Simulation(ABC):
         Abstract method to perform one Monte Carlo step
     """
 
-    def __init__(self, box, log_energy: bool = True):
+    def __init__(self, box: Box, log_energy: bool = True) -> None:
         """
         Initialize the base simulation class.
         
@@ -76,7 +78,7 @@ class MetropolisMC(Simulation):
         Perform one complete Monte Carlo sweep over all molecules
     """
 
-    def __init__(self, box, T: float, b: float, *, log_energy: bool = True):
+    def __init__(self, box, T: float, b: float, *, log_energy: bool = True) -> None:
         """
         Initialize the Metropolis Monte Carlo simulation.
         
@@ -88,7 +90,7 @@ class MetropolisMC(Simulation):
             Temperature of the simulation in reduced units
         b : float
             Maximum displacement parameter for random moves
-        log_energy : bool, optional
+        log_energy : bool
             Whether to track potential energy during simulation (default is True)
         """
         super().__init__(box, log_energy=log_energy)
@@ -111,7 +113,7 @@ class MetropolisMC(Simulation):
         """
         accepted = 0
         N = len(self.box._molecules)
-        for i in range(N):
+        for _ in range(N):
             idx = np.random.randint(N)
             mol = self.box._molecules[idx]
             
@@ -185,7 +187,7 @@ class Orchestrator:
         Display a summary of loaded configuration parameters
     """
     
-    def __init__(self, config_file: str):
+    def __init__(self, config_file: str) -> None:
         """
         Initialize the orchestrator with configuration file.
         
@@ -207,7 +209,7 @@ class Orchestrator:
         self.simulation = None
         self.current_step = 0
         
-    def _load_config(self) -> Dict[str, Any]:
+    def _load_config(self) -> dict:
         """
         Load configuration parameters from JSON file.
         
@@ -232,7 +234,7 @@ class Orchestrator:
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON in configuration file: {e}")
     
-    def setup_box(self, box_class):
+    def setup_box(self, box_class: type) -> None:
         """
         Initialize the simulation box based on configuration parameters.
         
@@ -254,7 +256,7 @@ class Orchestrator:
         if "compartments" in setup_config:
             self._setup_compartments(setup_config["compartments"])
     
-    def _setup_compartments(self, compartments: List[Dict[str, float]]):
+    def _setup_compartments(self, compartments: list) -> None:
         """
         Initialize compartments in the simulation box.
         
@@ -276,7 +278,7 @@ class Orchestrator:
             # Implementation depends on your Box class methods
             print(f"Setting up compartment {i+1}: density={density}, volume_fraction={volume_fraction}")
     
-    def setup_simulation(self, simulation_class, **simulation_kwargs):
+    def setup_simulation(self, simulation_class: type, **simulation_kwargs: Any) -> None:
         """
         Initialize the simulation instance with specified parameters.
         
@@ -308,7 +310,7 @@ class Orchestrator:
             **simulation_kwargs
         )
     
-    def run_simulation(self):
+    def run_simulation(self) -> None:
         """
         Execute the complete simulation workflow.
         
@@ -342,7 +344,6 @@ class Orchestrator:
             
             # Check if we need to reset sampling
             if step in reset_sampling_steps:
-                # TODO:  """Has to get implemented... ..."""
                 print(f"Resetting sampling at step {step}")
             
             # Perform one simulation step
@@ -368,7 +369,7 @@ class Orchestrator:
         
         print("Simulation completed successfully!")
     
-    def print_config_summary(self):
+    def print_config_summary(self) -> None:
         """
         Display a formatted summary of the loaded configuration parameters.
         
@@ -395,17 +396,89 @@ class Orchestrator:
 
 class SimulationFactory:
     """
-    Factory to register and create Potential instances.
+    Factory class for registering and creating Simulation instances.
+    
+    The SimulationFactory implements the factory design pattern to provide
+    a centralized registry for different simulation types. It allows dynamic
+    registration of simulation classes and creation of simulation instances
+    by name, promoting modularity and extensibility in the simulation framework.
+    
+    Attributes
+    ----------
+    _types : dict
+        Dictionary mapping simulation type names to their corresponding classes
+    
+    Methods
+    -------
+    register(name, simulation_class)
+        Register a new simulation class with a given name
+    __call__(name, **kwargs)
+        Create and return a simulation instance of the specified type
     """
-    def __init__(self):
+    
+    def __init__(self) -> None:
+        """
+        Initialize the simulation factory with an empty registry.
+        
+        Creates an empty dictionary to store the mapping between
+        simulation type names and their corresponding classes.
+        """
         self._types = {}
 
-    def register(self, name: str, potential_class: type):
+    def register(self, name: str, simulation_class: type) -> None:
+        """
+        Register a simulation class with the factory under a given name.
+        
+        Adds a new simulation class to the factory registry, allowing it
+        to be instantiated later using the provided name. The class must
+        inherit from the Simulation base class.
+        
+        Parameters
+        ----------
+        name : str
+            The name identifier for the simulation type
+        simulation_class : type
+            The simulation class to register, must inherit from Simulation
+            
+        Raises
+        ------
+        TypeError
+            If the provided class does not inherit from Simulation
+        """
         if not issubclass(simulation_class, Simulation):
-            raise TypeError(f"{simulation_class} must inherit from Potential")
+            raise TypeError(f"{simulation_class} must inherit from Simulation")
         self._types[name] = simulation_class
 
-    def __call__(self, name: str, **kwargs) -> Simulation:
+    def __call__(self, name: str, **kwargs: Any) -> Simulation:
+        """
+        Create and return a simulation instance of the specified type.
+        
+        Instantiates a simulation object using the class registered under
+        the given name, passing all keyword arguments to the constructor.
+        This method makes the factory instance callable.
+        
+        Parameters
+        ----------
+        name : str
+            The name of the registered simulation type to create
+        **kwargs
+            Keyword arguments to pass to the simulation constructor
+            
+        Returns
+        -------
+        Simulation
+            An instance of the requested simulation type
+            
+        Raises
+        ------
+        KeyError
+            If the requested simulation type name is not registered
+        """
         if name not in self._types:
-            raise KeyError(f"Unknown potential type: {name}")
+            raise KeyError(f"Unknown simulation type: {name}")
+
         return self._types[name](**kwargs)
+
+    
+
+    
