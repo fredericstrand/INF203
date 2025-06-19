@@ -6,12 +6,12 @@ def compute_distortion(box, sx, sy, sz):
     Compute the change in potential energy (delta U) and interface area (delta A)
     for a small, volume-conserving distortion of the simulation box and coordinates.
     """
-    molecules = box.get_molecules()
+    molecules = box.get_molecules
     potential = box.potential
     box_size = box.box_size
 
     # Ensure volume-conserving distortions
-    if not (np.isclose(sx1 * sy1 * sz1, 1.0) and np.isclose(sx2 * sy2 * sz2, 1.0)):
+    if not (np.isclose(sx * sy * sz, 1.0)):
         raise ValueError("Distortions must be volume-conserving (sx * sy * sz = 1.0)")
 
     # Undistorted energy
@@ -23,6 +23,7 @@ def compute_distortion(box, sx, sy, sz):
     
     # Distorted energy
     E1 = 0.0
+    N = len(molecules)
     for i in range(N):
         for j in range(i + 1, N):
             center = box_size / 2.0
