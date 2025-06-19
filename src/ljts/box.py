@@ -198,3 +198,7 @@ class Box:
             Box dimensions as [len_x, len_y, len_z]
         """
         return self._box_size
+
+    @property
+    def total_Epot(self):
+        return self._total_Epot

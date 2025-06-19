@@ -108,7 +108,7 @@ def run_with_orchestrator(config_file: str):
         orchestrator.setup_simulation(
             MetropolisMC,
             T=T,
-            log_energy=False
+            log_energy=True
         )
         mc = orchestrator.simulation
         setattr(mc, "b", max_disp)
@@ -116,7 +116,7 @@ def run_with_orchestrator(config_file: str):
         # Prepare logging
         results_dir = "results"
         os.makedirs(results_dir, exist_ok=True)
-        param_str = f"steps{n_pr}_{zeta}"
+        param_str = f"steps{n_pr}_d1({sx1},{sy1},{sz1})"
         log_fname = os.path.join(results_dir, f"result_{param_str}.log")
 
         # Open log file and write parameter header
@@ -128,21 +128,31 @@ def run_with_orchestrator(config_file: str):
             f_log.write(f"# Total steps: {n_pr}\n")
             f_log.write(f"# Log interval: {log_interval}\n")
             f_log.write(f"# Max displacement: {max_disp}\n")
-            f_log.write(f"# Distortions (d1, d2): {d1}, {d2}\n")
+            f_log.write(f"# Distortions: d1=({sx1},{sy1},{sz1}), d2=({sx2},{sy2},{sz2})\n")
             f_log.write(f"# Reset sampling at: {sorted(reset_points)}\n")
             f_log.write(f"# Console freq: {console_freq}\n")
             f_log.write(f"# Trajectory freq/file: {log_interval}/{traj_file}\n")
-            f_log.write("\n# step   E_pot     acc     e1        avg1      gamma1    "
-                        "e2        avg2      gamma2\n")
+            f_log.write("\n# step   E_pot     acc     w1        avg1      gamma1    w2        avg2      gamma2\n")
 
             # Run the main Monte Carlo loop
             for step in range(1, n_pr + 1):
                 acc = mc.step()
                 Epot = box.total_epot
 
+                # Reset accumulators if requested
                 if step in reset_points:
                     exp_s1.clear()
                     exp_s2.clear()
+
+                # Compute distortions each MC step
+                dU1, dA1 = compute_distortion(box, sx1, sy1, sz1)
+                dU2, dA2 = compute_distortion(box, sx2, sy2, sz2)
+
+                # Boltzmann weights
+                w1 = np.exp(-dU1 / T)
+                w2 = np.exp(-dU2 / T)
+                exp_s1.append(w1)
+                exp_s2.append(w2)
 
                 # Console output
                 if console_freq and (step % console_freq == 0):
@@ -153,45 +163,17 @@ def run_with_orchestrator(config_file: str):
                     os.makedirs(os.path.dirname(traj_file), exist_ok=True)
                     box.write_XYZ(traj_file)
 
-                # Compute surface tension
+                # Logging to file at intervals
                 if step % log_interval == 0:
-                    dU1, dA1 = compute_distortion(
-                        box._molecules,
-                        box.box_size,
-                        box.potential,
-                        sqrt_zeta,
-                        1.0 / zeta,
-                        sqrt_zeta
-                    )
-                    dU2, dA2 = compute_distortion(
-                        box._molecules,
-                        box.box_size,
-                        box.potential,
-                        1.0 / sqrt_zeta,
-                        zeta,
-                        1.0 / sqrt_zeta
-                    )
-
-                    e1 = np.exp(-dU1 / T)
-                    e2 = np.exp(-dU2 / T)
-                    exp_s1.append(e1)
-                    exp_s2.append(e2)
-
                     avg1 = np.mean(exp_s1)
                     avg2 = np.mean(exp_s2)
                     gamma1 = -T * np.log(avg1) / dA1
                     gamma2 = -T * np.log(avg2) / dA2
 
                     f_log.write(
-                        f"{step:6d}  "
-                        f"{Epot:8.3f}  "
-                        f"{acc:5.3f}  "
-                        f"{e1:7.3e}  "
-                        f"{avg1:7.3e}  "
-                        f"{gamma1:8.3f}  "
-                        f"{e2:7.3e}  "
-                        f"{avg2:7.3e}  "
-                        f"{gamma2:8.3f}\n"
+                        f"{step:6d}  {Epot:8.3f}  {acc:5.3f}  "
+                        f"{w1:7.3e}  {avg1:7.3e}  {gamma1:8.3f}  "
+                        f"{w2:7.3e}  {avg2:7.3e}  {gamma2:8.3f}\n"
                     )
 
             # Write final surface tension estimates
@@ -209,8 +191,6 @@ def run_with_orchestrator(config_file: str):
         print(f"Final E_pot:        {box.total_epot:.5f}")
         print(f"Total # molecules:  {len(box._molecules)}")
 
-    # Plot the curves for energy and surface tension
-    plot_energy_and_gamma(log_fname)
 
     except FileNotFoundError as e:
         print(f"Error: {e}", file=sys.stderr)
