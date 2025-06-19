@@ -234,7 +234,7 @@ class SimulationFactory:
     def __init__(self):
         self._types = {}
 
-    def register(self, name: str, potential_class: type):
+    def register(self, name: str, simulation_class: type):
         if not issubclass(simulation_class, Simulation):
             raise TypeError(f"{simulation_class} must inherit from Potential")
         self._types[name] = simulation_class

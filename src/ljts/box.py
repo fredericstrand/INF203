@@ -126,3 +126,7 @@ class Box:
     @property
     def box_size(self):
         return self._box_size
+
+    @property
+    def total_Epot(self):
+        return self._total_Epot

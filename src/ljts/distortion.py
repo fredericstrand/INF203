@@ -1,18 +1,20 @@
 import numpy as np
 
-def compute_distortion(molecules, box_size, potential, sx, sy, sz):
+def compute_distortion(box, sx, sy, sz):
     """
     Compute the change in potential energy (delta U) and interface area (delta A)
     for a small, volume-conserving distortion of the simulation box and coordinates.
     """
+    molecules = box.get_molecules()
+    potential = box.potential
+    box_size = box.box_size
+
+    # Ensure volume-conserving distortions
+    if not (np.isclose(sx1 * sy1 * sz1, 1.0) and np.isclose(sx2 * sy2 * sz2, 1.0)):
+        raise ValueError("Distortions must be volume-conserving (sx * sy * sz = 1.0)")
+
     # Undistorted energy
-    E0 = 0.0
-    N = len(molecules)
-    for i in range(N):
-        for j in range(i + 1, N):
-            p1 = molecules[i].position
-            p2 = molecules[j].position
-            E0 += potential.potential_energy(p1, p2, box_size)
+    E0 = box.total_Epot
 
     # Distorted box size and scale matrix
     new_box = box_size * np.array([sx, sy, sz])
@@ -22,8 +24,9 @@ def compute_distortion(molecules, box_size, potential, sx, sy, sz):
     E1 = 0.0
     for i in range(N):
         for j in range(i + 1, N):
-            p1 = scale_matrix @ molecules[i].position
-            p2 = scale_matrix @ molecules[j].position
+            center = box_size / 2.0
+            p1 = scale_matrix @ (molecules[i].position - center) + center
+            p2 = scale_matrix @ (molecules[j].position - center) + center
             E1 += potential.potential_energy(p1, p2, new_box)
 
     delta_U = E1 - E0
