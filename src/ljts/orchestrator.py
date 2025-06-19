@@ -7,10 +7,36 @@ from typing import Dict, Any, List
 
 class Simulation(ABC):
     """
-    Base class for Monte Carlo simulations.
-    Subclasses must implement the 'step()' -> float (acceptance ratio) method.
+    Abstract base class for Monte Carlo simulations.
+    
+    This class defines the interface that all Monte Carlo simulation
+    implementations must follow. Subclasses should implement specific
+    Monte Carlo algorithms such as Metropolis sampling.
+    
+    Attributes
+    ----------
+    box : Box
+        The simulation box containing molecules
+    log_energy : bool
+        Whether to track and log potential energy during simulation
+    
+    Methods
+    -------
+    step()
+        Abstract method to perform one Monte Carlo step
     """
+
     def __init__(self, box, log_energy: bool = True):
+        """
+        Initialize the base simulation class.
+        
+        Parameters
+        ----------
+        box : Box
+            The simulation box containing molecules and potential
+        log_energy : bool, optional
+            Whether to track potential energy during simulation (default is True)
+        """
         self.box = box
         self.log_energy = log_energy
 
@@ -18,16 +44,71 @@ class Simulation(ABC):
     def step(self):
         """
         Perform one Monte Carlo step and return the acceptance ratio.
+        
+        Abstract method that must be implemented by subclasses to define
+        the specific Monte Carlo algorithm used for sampling.
+        
+        Returns
+        -------
+        float
+            Acceptance ratio for the Monte Carlo step
         """
         pass
 
 class MetropolisMC(Simulation):
+    """
+    Metropolis Monte Carlo simulation implementation.
+    
+    Implements the Metropolis algorithm for molecular Monte Carlo simulations.
+    Performs random displacement moves on molecules and accepts or rejects
+    them based on the Metropolis criterion using the Boltzmann factor.
+    
+    Attributes
+    ----------
+    T : float
+        Temperature of the simulation (in reduced units)
+    b : float
+        Maximum displacement parameter for random moves
+    
+    Methods
+    -------
+    step()
+        Perform one complete Monte Carlo sweep over all molecules
+    """
+
     def __init__(self, box, T: float, b: float, *, log_energy: bool = True):
+        """
+        Initialize the Metropolis Monte Carlo simulation.
+        
+        Parameters
+        ----------
+        box : Box
+            The simulation box containing molecules and potential
+        T : float
+            Temperature of the simulation in reduced units
+        b : float
+            Maximum displacement parameter for random moves
+        log_energy : bool, optional
+            Whether to track potential energy during simulation (default is True)
+        """
         super().__init__(box, log_energy=log_energy)
         self.T = T
         self.b = b
 
     def step(self) -> float:
+        """
+        Perform one Monte Carlo sweep using the Metropolis algorithm.
+        
+        Attempts to move each molecule once on average by selecting random
+        molecules and applying the Metropolis acceptance criterion. The
+        energy difference is calculated and moves are accepted based on
+        the Boltzmann probability exp(-ΔE/T).
+        
+        Returns
+        -------
+        float
+            Acceptance ratio for this Monte Carlo step (accepted moves / total attempts)
+        """
         accepted = 0
         N = len(self.box._molecules)
         for i in range(N):
@@ -73,15 +154,52 @@ class MetropolisMC(Simulation):
 class Orchestrator:
     """
     Orchestrator class for running and controlling Monte Carlo simulations.
-    Reads configuration from JSON file and manages the simulation execution.
+    
+    The Orchestrator manages the entire simulation workflow including
+    configuration loading, box setup, simulation initialization, and
+    execution control. It reads parameters from JSON configuration files
+    and handles output formatting and file management.
+    
+    Attributes
+    ----------
+    config_file : str
+        Path to the JSON configuration file
+    config : dict
+        Loaded configuration parameters
+    box : Box or None
+        The simulation box instance
+    simulation : Simulation or None
+        The simulation instance
+    current_step : int
+        Current simulation step number
+    
+    Methods
+    -------
+    setup_box(box_class)
+        Initialize the simulation box based on configuration
+    setup_simulation(simulation_class, **kwargs)
+        Initialize the simulation instance
+    run_simulation()
+        Execute the complete simulation workflow
+    print_config_summary()
+        Display a summary of loaded configuration parameters
     """
     
     def __init__(self, config_file: str):
         """
-        Initialize the orchestrator with configuration from JSON file.
+        Initialize the orchestrator with configuration file.
         
-        Args:
-            config_file: Path to the JSON configuration file
+        Parameters
+        ----------
+        config_file : str
+            Path to the JSON configuration file containing simulation parameters
+            
+        Raises
+        ------
+        FileNotFoundError
+            If the configuration file cannot be found
+        ValueError
+            If the configuration file contains invalid JSON
         """
         self.config_file = config_file
         self.config = self._load_config()
@@ -90,7 +208,21 @@ class Orchestrator:
         self.current_step = 0
         
     def _load_config(self) -> Dict[str, Any]:
-        """Load configuration from JSON file."""
+        """
+        Load configuration parameters from JSON file.
+        
+        Returns
+        -------
+        dict
+            Dictionary containing all configuration parameters
+            
+        Raises
+        ------
+        FileNotFoundError
+            If the configuration file cannot be found
+        ValueError
+            If the JSON file contains syntax errors
+        """
         try:
             with open(self.config_file, 'r') as f:
                 config = json.load(f)
@@ -102,10 +234,15 @@ class Orchestrator:
     
     def setup_box(self, box_class):
         """
-        Setup the simulation box based on configuration.
+        Initialize the simulation box based on configuration parameters.
         
-        Args:
-            box_class: The Box class to instantiate
+        Creates a box instance with dimensions specified in the configuration
+        and sets up compartments if defined in the configuration file.
+        
+        Parameters
+        ----------
+        box_class : type
+            The Box class to instantiate for the simulation
         """
         setup_config = self.config["setup"]
         box_size = np.array([setup_config["Lx"], setup_config["Ly"], setup_config["Lz"]])
@@ -119,10 +256,16 @@ class Orchestrator:
     
     def _setup_compartments(self, compartments: List[Dict[str, float]]):
         """
-        Setup compartments in the box based on configuration.
+        Initialize compartments in the simulation box.
         
-        Args:
-            compartments: List of compartment configurations
+        Sets up different regions within the box with specified densities
+        and volume fractions based on the configuration parameters.
+        
+        Parameters
+        ----------
+        compartments : list of dict
+            List of compartment configurations, each containing density
+            and volume_fraction parameters
         """
         # This method would need to be implemented based on your Box class
         # compartment setup functionality
@@ -135,11 +278,22 @@ class Orchestrator:
     
     def setup_simulation(self, simulation_class, **simulation_kwargs):
         """
-        Setup the simulation instance.
+        Initialize the simulation instance with specified parameters.
         
-        Args:
-            simulation_class: The Simulation class to instantiate
-            **simulation_kwargs: Additional arguments for simulation initialization
+        Creates a simulation object using the provided class and merges
+        configuration parameters with any additional keyword arguments.
+        
+        Parameters
+        ----------
+        simulation_class : type
+            The Simulation class to instantiate
+        **simulation_kwargs : dict
+            Additional keyword arguments for simulation initialization
+            
+        Raises
+        ------
+        RuntimeError
+            If the box has not been set up before calling this method
         """
         if self.box is None:
             raise RuntimeError("Box must be setup before simulation. Call setup_box() first.")
@@ -155,6 +309,13 @@ class Orchestrator:
         )
     
     def run_simulation(self):
+        """
+        Execute the complete simulation workflow.
+        
+        Runs the Monte Carlo simulation according to the configuration
+        parameters, handling console output, trajectory writing, and
+        configuration file output at specified intervals.
+        """
         # Create data directory if it doesn't exist
         os.makedirs("data", exist_ok=True)
         
@@ -208,7 +369,12 @@ class Orchestrator:
         print("Simulation completed successfully!")
     
     def print_config_summary(self):
-        """Print a summary of the loaded configuration."""
+        """
+        Display a formatted summary of the loaded configuration parameters.
+        
+        Prints key simulation parameters including box dimensions, step counts,
+        output frequencies, and compartment information in a readable format.
+        """
         print("================== Configuration Summary ==================")
         print(f"Box size: {self.config['setup']['Lx']} x {self.config['setup']['Ly']} x {self.config['setup']['Lz']}")
         print(f"Total steps: {self.config['steps']['total']}")

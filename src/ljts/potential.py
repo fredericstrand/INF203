@@ -1,23 +1,109 @@
 from abc import ABC, abstractmethod
 import numpy as np
 
+
 class Potential(ABC):
+    """
+    Abstract base class for molecular potential energy calculations.
+    
+    This class defines the interface that all potential energy models must
+    implement. Subclasses should provide specific implementations for
+    different types of intermolecular interactions.
+    
+    Methods
+    -------
+    potential_energy(pos_i, pos_j, box_size)
+        Abstract method to calculate potential energy between two molecules
+    """
+    
     @abstractmethod
     def potential_energy(self, pos_i: np.ndarray, pos_j: np.ndarray, box_size: np.ndarray) -> float:
         """
-        Abstract method to calculate the potential energy between this molecule and another.
-        Subclasses must implement this method.
+        Calculate the potential energy between two molecules.
+        
+        Abstract method that must be implemented by subclasses to define
+        the specific form of intermolecular potential energy calculation.
+        
+        Parameters
+        ----------
+        pos_i : numpy.ndarray
+            Position of the first molecule as a 3D vector [x, y, z]
+        pos_j : numpy.ndarray
+            Position of the second molecule as a 3D vector [x, y, z]
+        box_size : numpy.ndarray
+            Dimensions of the simulation box as [len_x, len_y, len_z]
+            
+        Returns
+        -------
+        float
+            Potential energy between the two molecules
         """
         pass
 
 class LJTS(Potential):
+    """
+    Lennard-Jones Truncated and Shifted (LJTS) potential implementation.
+    
+    Implements the Lennard-Jones potential with a spherical cutoff and
+    energy shifting to ensure continuity at the cutoff distance. The
+    potential is truncated beyond the cutoff radius and shifted so that
+    the energy is zero at the cutoff.
+    
+    Attributes
+    ----------
+    cutoff : float
+        Cutoff distance for the potential interaction
+    u : float
+        Energy shift value to ensure continuity at cutoff
+    
+    Methods
+    -------
+    potential_energy(pos_i, pos_j, box_size)
+        Calculate LJTS potential energy between two molecules
+    """
     def __init__(self, cutoff: float = 2.5):
+        """
+        Initialize the LJTS potential with specified cutoff distance.
+        
+        Calculates the energy shift value required to make the potential
+        continuous at the cutoff distance by setting the potential energy
+        to zero at r = cutoff.
+        
+        Parameters
+        ----------
+        cutoff : float, optional
+            Cutoff distance for potential interactions (default is 2.5)
+        """
         self.cutoff = cutoff
         self.u = 4 * ((1.0 / cutoff**12) - (1.0 / cutoff**6))
 
-    def potential_energy(self, pos_i, pos_j, box_size):
+    def potential_energy(self, pos_i: np.ndarray, pos_j: np.ndarray, box_size: np.ndarray) -> float:
         """
-        Calculate the potential energy between this molecule and another using the Lennard-Jones potential.
+        Calculate LJTS potential energy between two molecules.
+        
+        Computes the Lennard-Jones potential with truncation and shifting.
+        Uses the minimum image convention to handle periodic boundary
+        conditions. Returns zero if the distance exceeds the cutoff.
+        
+        The LJTS potential is given by:
+        U(r) = 4 * [(1/r)^12 - (1/r)^6] - u     for r <= r_cutoff
+        U(r) = 0                                for r > r_cutoff
+        
+        where u is the shift value ensuring continuity at r_cutoff.
+        
+        Parameters
+        ----------
+        pos_i : numpy.ndarray
+            Position of the first molecule as a 3D vector [x, y, z]
+        pos_j : numpy.ndarray
+            Position of the second molecule as a 3D vector [x, y, z]
+        box_size : numpy.ndarray
+            Dimensions of the simulation box as [len_x, len_y, len_z]
+            
+        Returns
+        -------
+        float
+            LJTS potential energy between the two molecules
         """
         delta = pos_i - pos_j
         delta -= box_size * np.round(delta / box_size)

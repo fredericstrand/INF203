@@ -4,7 +4,7 @@ import pytest
 
 
 def test_position():
-    mol = Molecule([1.0, 2.0, 3.0])
+    mol = Molecule(np.array([1.0, 2.0, 3.0]))
     assert np.allclose(
         mol.position, [1.0, 2.0, 3.0]
     ), "position given to constructor is not molecules position"
@@ -21,7 +21,7 @@ def test_position_dimension(invalid_position):
 
 
 def test_move_random():
-    mol = Molecule([3.0, 2.0, 1.0])
+    mol = Molecule(np.array([3.0, 2.0, 1.0]))
     box_size = 10
     b = 0.5
     mol.move_random(b, box_size)
@@ -30,16 +30,16 @@ def test_move_random():
 
 
 def test_getter_position():
-    mol = Molecule([4.0, 5.0, 6.0])
+    mol = Molecule(np.array([4.0, 5.0, 6.0]))
     assert np.allclose(mol.position, [4.0, 5.0, 6.0])
 
 
 def test_getter_alt_position():
-    mol = Molecule([7.0, 8.0, 9.0])
+    mol = Molecule(np.array([7.0, 8.0, 9.0]))
     assert np.allclose(mol.alt_position, [7.0, 8.0, 9.0])
 
 
 def test_setter_position():
-    mol = Molecule([0.0, 0.0, 0.0])
+    mol = Molecule(np.array([0.0, 0.0, 0.0]))
     mol.position = [7.0, 8.0, 9.0]
     assert np.allclose(mol.position, [7.0, 8.0, 9.0])
