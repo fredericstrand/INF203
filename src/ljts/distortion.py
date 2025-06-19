@@ -10,10 +10,6 @@ def compute_distortion(box, sx, sy, sz):
     potential = box.potential
     box_size = box.box_size
 
-    # Ensure volume-conserving distortions
-    if not (np.isclose(sx * sy * sz, 1.0)):
-        raise ValueError("Distortions must be volume-conserving (sx * sy * sz = 1.0)")
-
     # Undistorted energy
     E0 = box.total_Epot
 

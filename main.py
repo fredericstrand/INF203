@@ -85,16 +85,27 @@ def run_with_orchestrator(config_file: str):
         traj_cfg = cfg.get("trajectory_output", {})
         log_interval = traj_cfg.get("frequency")
         traj_file = traj_cfg.get("file")
+        result_file  = cfg.get("results_output", {}).get("file")
+
+        if not result_file:
+            raise Error("No results output file specified in configuration")
 
         conf_cfg = cfg.get("configuration_output", {})
         init_file = conf_cfg.get("initial")
+    
         final_file = conf_cfg.get("final")
 
         ctrl = cfg["control_parameters"]
         max_disp = ctrl["maximum_displacement"]
         distortions = ctrl["test_area_distortion"]
         d1, d2 = distortions[0], distortions[1]
-        zeta = d2["sx"]
+        sx1, sy1, sz1 = d1["sx"], d1["sy"], d1["sz"]
+        sx2, sy2, sz2 = d2["sx"], d2["sy"], d2["sz"]
+
+        if not (np.isclose(sx1 * sy1 * sz1, 1.0) and np.isclose(sx2 * sy2 * sz2, 1.0)):
+            raise ValueError("Distortions must be volume-conserving (sx * sy * sz = 1.0)")
+
+        zeta = sx1 * sz1
         sqrt_zeta = zeta ** 0.5
 
         # Print initial stats and save initial configuration
@@ -116,12 +127,10 @@ def run_with_orchestrator(config_file: str):
         # Prepare logging
         results_dir = "results"
         os.makedirs(results_dir, exist_ok=True)
-        param_str = f"steps{n_pr}_d1({sx1},{sy1},{sz1})"
-        log_fname = os.path.join(results_dir, f"result_{param_str}.log")
 
         # Open log file and write parameter header
         exp_s1, exp_s2 = [], []
-        with open(log_fname, "w") as f_log:
+        with open(result_file, "w") as f_log:
             f_log.write("# Simulation Parameters\n")
             f_log.write(f"# Box dimensions: {Lx} x {Ly} x {Lz}\n")
             f_log.write(f"# Temperature: {T}\n")

@@ -1,4 +1,6 @@
-{
+{ "results_output": {
+  "file": "results/vle-0.80-reference.log"
+  },
   "setup": {
     "Lx": 5,
     "Ly": 40,
