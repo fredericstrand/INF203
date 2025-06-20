@@ -88,13 +88,12 @@ def run_with_orchestrator(config_file: str):
         result_file  = cfg.get("results_output", {}).get("file")
 
         if not result_file:
-            raise Error("No results output file specified in configuration")
+            raise KeyError("No results output file specified in configuration")
 
         conf_cfg = cfg.get("configuration_output", {})
         init_file = conf_cfg.get("initial")
     
         final_file = conf_cfg.get("final")
-
         ctrl = cfg["control_parameters"]
         max_disp = ctrl["maximum_displacement"]
         distortions = ctrl["test_area_distortion"]
