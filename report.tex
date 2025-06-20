@@ -1,0 +1,245 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{tabularx}
+\usepackage{geometry}
+\usepackage{lscape} 
+ 
+% Define a custom style for code blocks
+\lstset{
+    basicstyle=\ttfamily\small,
+    backgroundcolor=\color{gray!10},
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{red!70!black},
+    breaklines=true,
+    tabsize=4
+}
+
+\begin{document}
+
+% Front Page
+\begin{titlepage}
+    \centering
+    
+    \Huge
+    \textbf{}
+
+    \vspace{1.5cm}
+    \LARGE
+    Monte Carlo Simulation of Surface Tension in a Lennard-Jones Fluid
+
+    \vspace{1.5cm}
+
+    \includegraphics[width=0.7\textwidth]{images/molekyl.jpg}\\[1cm]
+    \cite{uh_methanediol_2021}
+    \vfill
+
+    \Large
+    \textbf{Ivar Eftedal}\\
+    \textbf{Christopher Ljosland Strand}\\
+    \textbf{Frederic Ljosland Strand}\\
+    \vspace{0.5cm}
+    Project Task in INF203 at the University of Life Sciences\\
+    \vspace{0.5cm}
+    June 2025\\
+
+    \vspace{1cm}
+
+\end{titlepage}
+
+% Introduction
+\section{Introduction}
+
+\subsection*{Group composition and collaboration}
+
+The group consists of Iver Eftedal, Christopher Strand and Frederic Strand. First we established epics, large bodies of work related to multiple user stories to guide our work forward. We then split them into smaller bodies of work and used a kanban board to assign and keep track of the progress on different tasks. For collaboration we used the agile methods, with daily meetings and sprints (in this case, worksheets). For a seamless version control, we utilize git (github). Each member should work on their own branch with their assigned subtask, and then merge to the main branch. Ideally, this should be done in person with the other members, in case of merge conflict. 
+
+
+\subsection*{Requirements Register}
+
+To guide the process it is a good idea to identify some personas and user stories. This allows for a clear picture of what the application must do, should do and could do.
+
+\subsubsection*{Personas}
+
+\begin{itemize}
+    \item \textbf{Researcher Ole}: A computational physicist who wants to run large-scale simulations and analyze system properties.
+    \item \textbf{Student Geir}: A Master's student who is learning how molecular simulations work and needs an intuitive interface.
+    \item \textbf{Developer Arkadi}: A developer maintaining and extending the simulation codebase.
+\end{itemize}
+
+\subsubsection*{User stories}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\textwidth}{|c|c|X|c|}
+\hline
+\textbf{ID} & \textbf{Persona} & \textbf{User Story} & \textbf{MoSCoW} \\
+\hline
+US1 & Researcher Ole & Wants to run simulations with varying densities to compare molecular behavior. & Must \\
+US2 & Student Geir & Wants to visualize molecule positions to better understand spatial distribution. & Should \\
+US3 & Developer Arkadi & Needs unit tests for molecule initialization to ensure correctness after changes. & Could \\
+US4 & Researcher Ole & Needs to log potential energy during simulation to analyze convergence. & Must \\
+US5 & Researcher Ole & Wants to save XYZ files of the initial, final, and intermediate states for external visualization. & Should \\
+US6 & Developer Arkadi & Implements the Metropolis Monte Carlo algorithm so the system reaches equilibrium. & Must \\
+US7 & Student Geir & Wants access to stats like average energy and surface tension post-equilibration to assess results. & Should \\
+US8 & Developer Arkadi & Uses abstract classes or callable objects where suitable to keep the codebase flexible and modular. & Could \\
+\hline
+\end{tabularx}
+
+\vspace{0.5em}
+\textbf{Table 1:} Agile user stories with MoSCoW prioritization
+\end{center}
+
+
+\subsubsection*{Epics}
+
+\begin{itemize}
+    \item \textbf{EP1 – Core Simulation Engine:} Implement the foundational components for Monte Carlo simulations, including molecule initialization, energy calculations, and box setup. Related to: US1, US6
+    
+    \item \textbf{EP2 – Equilibration and Sampling Control:} Design and implement mechanisms for managing equilibration and production phases, including reset points and logging strategies. Related to: US4, US7
+    
+    \item \textbf{EP3 – Data Analysis and Uncertainty Quantification:} Enable reliable post-simulation analysis through statistical sampling, mean/std computation, and block averaging. Related to: US4, US7
+    
+    \item \textbf{EP4 – Output and Visualization:} Ensure that XYZ output files, trajectory snapshots, and relevant physical quantities are written in a format compatible with tools like JMol or VMD. Related to: US2, US5
+    
+    \item \textbf{EP5 – Software Architecture and Extensibility:} Maintain a clean and modular structure using object-oriented design, abstract classes, and factory patterns to allow future extensibility. Related to: US3, US8
+    
+    \item \textbf{EP6 – Testing and Validation:} Implement comprehensive unit and integration tests to verify correctness and stability of key components such as potential energy, molecule moves, and overall simulation behavior. Related to: US3, US6
+\end{itemize}
+
+\subsubsection*{User guide}
+
+To use the project, you should make a JSON file containing the parameters you want to use. If you do not have a JSON file, the program will have a default file. To run the program you write this in the terminal:
+
+With a JSON file
+
+\begin{verbatim}
+python main.py <JSON file, for example "vle-0.80-reference.json">
+\end{verbatim}
+
+without JSON file:
+
+\begin{verbatim}
+python main.py
+\end{verbatim}
+
+
+\section{Implementation}
+
+\subsection*{Code and class structure}
+
+\subsubsection*{Folder structure}
+
+The project is organized as a python package, which later could be published for others to use. Therefore it follows a general structure. Note that we have tried to make an own file for most classes for clarity.
+
+\begin{itemize}
+    \item \textbf{main.py}: The central script to run the simulation.
+    mesh and solver, and organizes the entire process.
+    \item \textbf{src/}: Contains the source code with subdirectories for the code. For a larger program there could be multiple subdirectories, but in our case it is just one.
+    \begin{itemize}
+        \item \textbf{ljts/}: Contains the simulation files
+        \begin{itemize}
+            \item \texttt{box.py}: Contains the box class 
+            \item \texttt{molecule.py}: Contains the molecule class
+            \item \texttt{potential.py}: Contains Potential class with abstract subclasses for different approaches.
+            \item \texttt{distortion.py}: Function for computing distortion and determining surface tension
+            \item \texttt{orchestor.py}: Class for running the simulation
+    \end{itemize}
+    \item \textbf{tests/}: Contains unit tests or integration tests
+    that verify the correctness of various modules.
+    \item \textbf{config.py}: A Python script for parsing the configuration files so they can be used in the main.py
+\end{itemize}
+\end{itemize}
+
+\subsubsection*{ER - diagram}
+
+
+\subsection*{Advanced OOP techniques}
+
+We use both abstract methods and a factory for a more modular and extendable program. In our case, this allows for an easy extension to a different way of calculating potential energy, for example harmonic. Refering to the personas, this saves Developer Arkadi from a lot of headaches when extending the program.
+
+\subsection*{Python package}
+
+Our program is built as a package, which means that it follows a structured and modular design with the necessary metadata and configuration files. This allows it to be published, installed and reused across different systems or projects.
+
+\section{Functionality and validation}
+
+\subsection*{Testing and Validation}
+
+We have comprehensive tests using pytest for easy use. We have both unit and integration tests to make sure our program works as intended. For the unit tests, we for example have:
+
+\begin{itemize}
+    \item A test to check that potential energy is symmetric
+    \item That the box initialization works as intended
+    \item A check that getters work
+\end{itemize}
+
+But for the higher level tests we have:
+
+\begin{itemize}
+    \item \textbf{Integration tests} to check that multiple components work together and work as intended. For example that the MetropolisMC works, since this integrates a lot of the other functions.
+    \item \textbf{Acceptance test} to check that the program works as a whole, this is the highest "order" test.
+\end{itemize}
+
+Together this is an important validation that the program gives accurate results, without bugs or bias. 
+
+\subsection*{Initial configuration setup and input/output}
+
+This functionality is fully implemented. The initial configurations are created randomly and gives output files like \texttt{init.xyz} and \texttt{final.xyz}. These can be visualized with JMol to ensure that the particles are properly distributed and simulation volume is correct.
+
+\subsection*{Pair potential and Monte Carlo method}
+
+Both the pair potential and Monte Carlo method is implemented with the Lennard-Jones truncated-shifted (LJTS) potential. We verify the correctness through energy comparisons and symmetry tests. The Metropolis Monte Carlo method integrates this potential and updates configurations. We also monitor the acceptance ratio, which stabilizes within expected ranges. This is a good indication of proper implementation and a good balance. 
+
+\subsection*{Test area method and surface tension calculation}
+
+We implemented the test area method to estimate surface tension $\gamma$ by applying small, volume-conserving distortions to the simulation box. Two deformations are used:
+\begin{itemize}
+    \item \textbf{Area increase:} Scale $x$ and $z$ by $\sqrt{\zeta}$, $y$ by $1/\zeta$.
+    \item \textbf{Area decrease:} Inverse scaling.
+\end{itemize}
+
+The potential energy change $\Delta U$ under each distortion is used to compute:
+\[
+\gamma = -\frac{T \cdot \log \langle \exp(-\Delta U / T) \rangle}{\Delta A}
+\]
+
+These values are updated at regular intervals during the simulation. Final surface tension estimates for both distortions are logged and show consistent, physically reasonable results in line with literature values.
+
+\section*{Sampling and Data analysis}
+
+\subsection*{System Equilibration and Production}
+
+We don't have hard coded number of equilibrium steps, instead, we parse "reset sampling at" from the JSON file. This splits the simulation into an equilibration phase where the system relaxes to a stable physical state, and a production phase, where we have production samples. The "reset sampling at" resets all statistical averages for the surface tension estimation after a given number of steps.
+
+In the reference JSON file it uses first 40 steps to remove the most unsteady first samples, then finds the equilibrium from the first 10 000 steps. After this we reset at 20 000 for a fresh production phase. This makes sure that only statistically meaningful samples are included in the final results. This approach also follows best practices in Monte Carlo simulations and improves reliabiloty.
+
+\subsection*{Uncertainty analysis}
+
+To quantify the uncertainty of our simulation results, we calculate both the mean and standard deviation during the production phase. These values reflect the central tendency and variability of the data.
+
+\subsection*{Output and visualization}
+
+We generate a file logging the parameters and the values for epot etc for each "log interval" steps. From this we calculate the uncertainty analysis, but also plot the development of the different values.
+
+\section*{Results}
+
+\subsection*{Vapor only simulation}
+
+\subsection*{Liquid-Vapor simulation}
+
+\subsection*{Comparison with litterature}
+
+
+
+\bibliographystyle{plain}
+\bibliography{bib}
+
+\end{document}
