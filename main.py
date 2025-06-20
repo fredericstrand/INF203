@@ -1,8 +1,8 @@
 """Monte Carlo Surface Tension Simulator
 
 This script runs a Monte Carlo simulation of a Lennard-Jones Truncated-Shifted (LJTS)
-fluid in a rectangular simulation box to compute the surface tension using the test-area 
-method. It supports input via a JSON configuration file describing system, simulation, 
+fluid in a rectangular simulation box to compute the surface tension using the test-area
+method. It supports input via a JSON configuration file describing system, simulation,
 and output parameters.
 
 This script uses modules for defining molecular potentials, simulation boxes, orchestration,
@@ -35,12 +35,13 @@ from src.ljts.box import Box
 from src.ljts.orchestrator import Orchestrator, MetropolisMC
 from src.ljts.distortion import compute_distortion
 from src.config import parseArgs
+from src.timeseries.box_average import box_average
 
 
 def run_with_orchestrator(config_file: str):
     """Run the surface tension Monte Carlo simulation from a JSON configuration file.
 
-    This function reads parameters from a JSON configuration file, initializes the 
+    This function reads parameters from a JSON configuration file, initializes the
     molecular box and simulation engine, and performs a Metropolis Monte Carlo run
     while logging thermodynamic quantities including surface tension estimates.
 
@@ -51,7 +52,7 @@ def run_with_orchestrator(config_file: str):
     """
     try:
         # Load configuration from file
-        with open(config_file, 'r') as jf:
+        with open(config_file, "r") as jf:
             cfg = json.load(jf)
 
         # Initialize orchestrator and display configuration
@@ -71,7 +72,7 @@ def run_with_orchestrator(config_file: str):
             len_z=Lz,
             den_liq=setup["compartments"][1]["density"],
             den_vap=setup["compartments"][0]["density"],
-            potential=potential
+            potential=potential,
         )
         orchestrator.box = box
 
@@ -85,14 +86,14 @@ def run_with_orchestrator(config_file: str):
         traj_cfg = cfg.get("trajectory_output", {})
         log_interval = traj_cfg.get("frequency")
         traj_file = traj_cfg.get("file")
-        result_file  = cfg.get("results_output", {}).get("file")
+        result_file = cfg.get("results_output", {}).get("file")
 
         if not result_file:
             raise KeyError("No results output file specified in configuration")
 
         conf_cfg = cfg.get("configuration_output", {})
         init_file = conf_cfg.get("initial")
-    
+
         final_file = conf_cfg.get("final")
         ctrl = cfg["control_parameters"]
         max_disp = ctrl["maximum_displacement"]
@@ -102,10 +103,12 @@ def run_with_orchestrator(config_file: str):
         sx2, sy2, sz2 = d2["sx"], d2["sy"], d2["sz"]
 
         if not (np.isclose(sx1 * sy1 * sz1, 1.0) and np.isclose(sx2 * sy2 * sz2, 1.0)):
-            raise ValueError("Distortions must be volume-conserving (sx * sy * sz = 1.0)")
+            raise ValueError(
+                "Distortions must be volume-conserving (sx * sy * sz = 1.0)"
+            )
 
         zeta = sx1 * sz1
-        sqrt_zeta = zeta ** 0.5
+        sqrt_zeta = zeta**0.5
 
         # Print initial stats and save initial configuration
         print(f"Initial # molecules: {len(box._molecules)}")
@@ -115,11 +118,7 @@ def run_with_orchestrator(config_file: str):
             box.write_XYZ(init_file)
 
         # Setup the Metropolis Monte Carlo simulation
-        orchestrator.setup_simulation(
-            MetropolisMC,
-            T=T,
-            log_energy=True
-        )
+        orchestrator.setup_simulation(MetropolisMC, T=T, log_energy=True)
         mc = orchestrator.simulation
         setattr(mc, "b", max_disp)
 
@@ -136,11 +135,15 @@ def run_with_orchestrator(config_file: str):
             f_log.write(f"# Total steps: {n_pr}\n")
             f_log.write(f"# Log interval: {log_interval}\n")
             f_log.write(f"# Max displacement: {max_disp}\n")
-            f_log.write(f"# Distortions: d1=({sx1},{sy1},{sz1}), d2=({sx2},{sy2},{sz2})\n")
+            f_log.write(
+                f"# Distortions: d1=({sx1},{sy1},{sz1}), d2=({sx2},{sy2},{sz2})\n"
+            )
             f_log.write(f"# Reset sampling at: {sorted(reset_points)}\n")
             f_log.write(f"# Console freq: {console_freq}\n")
             f_log.write(f"# Trajectory freq/file: {log_interval}/{traj_file}\n")
-            f_log.write("\n# step   E_pot     acc     w1        avg1      gamma1    w2        avg2      gamma2\n")
+            f_log.write(
+                "\n# step   E_pot     acc     w1        avg1      gamma1    w2        avg2      gamma2\n"
+            )
 
             # Run the main Monte Carlo loop
             for step in range(1, n_pr + 1):
@@ -189,6 +192,15 @@ def run_with_orchestrator(config_file: str):
             f_log.write(f"gamma(area increase) = {gamma1:.6f}\n")
             f_log.write(f"gamma(area decrease) = {gamma2:.6f}\n")
 
+        # adding uncertanty analysis to log file
+        mean, std = box_average(result_file)
+        print("\n=== Uncertainty analysis ===")
+        print(f"mean: {mean}")
+        print(f"std: {std}")
+        with open(result_file, "a") as f_log:
+            f_log.write(f"mean: {mean}\n")
+            f_log.write(f"std: {std}\n")
+
         # Save final configuration
         if final_file:
             os.makedirs(os.path.dirname(final_file), exist_ok=True)
@@ -198,7 +210,6 @@ def run_with_orchestrator(config_file: str):
         print("\n=== Final Results ===")
         print(f"Final E_pot:        {box.total_epot:.5f}")
         print(f"Total # molecules:  {len(box._molecules)}")
-
 
     except FileNotFoundError as e:
         print(f"Error: {e}", file=sys.stderr)

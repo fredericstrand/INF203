@@ -32,9 +32,7 @@ def test_delta_u():
     )
     box.populate_box(den_liq=0.73, den_vap=0.02)
     zeta = 1
-    delta_u, delta_a = compute_distortion(
-        box._molecules, box.box_size, box.potential, zeta, 1 / zeta**2, zeta
-    )
+    delta_u, delta_a = compute_distortion(box, zeta, 1 / zeta**2, zeta)
     assert abs(delta_u) < 1e-10, "fault in distortion, delta u should be 0"
 
 
@@ -49,7 +47,5 @@ def test_delta_a():
     )
     box.populate_box(den_liq=0.73, den_vap=0.02)
     zeta = 1
-    delta_u, delta_a = compute_distortion(
-        box._molecules, box.box_size, box.potential, zeta, 1 / zeta**2, zeta
-    )
+    delta_u, delta_a = compute_distortion(box, zeta, 1 / zeta**2, zeta)
     assert abs(delta_a) < 1e-10, "fault in distortion, delta a should be 0"

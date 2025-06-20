@@ -1,5 +1,6 @@
-{   "results_output": {
-      "file": "results/vle-0.80-small.log"
+{
+  "results_output": {
+    "file": "results/vle-0.80-small.log"
   },
     "setup": {
       "Lx": 3,
@@ -54,4 +55,4 @@
       ]
     }
   }
-  
+}

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import json
 import numpy as np
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from src.ljts.box import Box
 

@@ -4,13 +4,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def line_average(
-        path: str, 
-        z: Optional[float] = 1.96, 
-        skiprow: int = 12, 
-        plot: Optional[bool] = False, 
-        wanted_col: str ="E_pot"
-    ):
+def box_average(
+    path: str,
+    z: Optional[float] = 1.96,
+    skiprow: int = 12,
+    plot: Optional[bool] = True,
+    wanted_col: str = "E_pot",
+):
     """
     Calculates the mean and confidence interval given 1 line=1 "block" as file is already only done every 50 or so.
 
@@ -36,13 +36,16 @@ def line_average(
     """
     with open(path, "r") as f:
         lines = f.readlines()
+    if len(lines) <= skiprow:
+        raise ValueError(f"Not enough lines in file '{path}' to skip {skiprow} rows")
     column_names = lines[skiprow - 1].strip("#").strip().split()
 
-    df = pd.read_csv(
-        path, delim_whitespace=True, skiprows=skiprow, names=column_names, comment="#"
-    )
+    df = pd.read_csv(path, sep="\s+", skiprows=skiprow, names=column_names, comment="#")
 
-    data = df[wanted_col].to_numpy()
+    if wanted_col not in df.columns:
+        raise ValueError(f"Column '{wanted_col}' not found in file '{path}'")
+
+    data = pd.to_numeric(df[wanted_col], errors="coerce").dropna().to_numpy()
     mean = float(np.mean(data))
     stde = np.std(data) / np.sqrt(len(data))
     ci = z * stde
