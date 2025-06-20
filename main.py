@@ -193,13 +193,23 @@ def run_with_orchestrator(config_file: str):
             f_log.write(f"gamma(area decrease) = {gamma2:.6f}\n")
 
         # adding uncertanty analysis to log file
-        mean, std = box_average(result_file)
+        mean_epot, std_epot = box_average(result_file)
+        mean_avg1, std_avg1 = box_average(result_file, wanted_col="avg1")
+        mean_avg2, std_avg2 = box_average(result_file, wanted_col="avg2")
+        mean_gamma1, ci_gamma1 = box_average(result_file, wanted_col="gamma1")
+        mean_gamma2, ci_gamma2 = box_average(result_file, wanted_col="gamma2")
         print("\n=== Uncertainty analysis ===")
-        print(f"mean: {mean}")
-        print(f"std: {std}")
+        print(f"epot: {mean_epot} +- {std_epot}\n")
+        print(f"avg1: {mean_avg1} +- {std_avg1}\n")
+        print(f"avg2: {mean_avg2} +- {std_avg2}\n")
+        print(f"gamma1: {mean_gamma1} +- {ci_gamma1}\n")
+        print(f"gamma2: {mean_gamma2} +- {ci_gamma2}\n")
         with open(result_file, "a") as f_log:
-            f_log.write(f"mean: {mean}\n")
-            f_log.write(f"std: {std}\n")
+            f_log.write(f"epot: {mean_epot} +- {std_epot}\n")
+            f_log.write(f"avg1: {mean_avg1} +- {std_avg1}\n")
+            f_log.write(f"avg2: {mean_avg2} +- {std_avg2}\n")
+            f_log.write(f"gamma1: {mean_gamma1} +- {ci_gamma1}\n")
+            f_log.write(f"gamma2: {mean_gamma2} +- {ci_gamma2}\n")
 
         # Save final configuration
         if final_file:
