@@ -10,4 +10,3 @@
 # Trajectory freq/file: 200/data/vle-0.80-reference_trajectory.xyz
 
 # step   E_pot     acc     w1        avg1      gamma1    w2        avg2      gamma2
-   200  -996.700  0.238  9.869e-01  9.766e-01   -37.919  1.013e+00  1.024e+00   -37.943

@@ -16,7 +16,7 @@ def compute_distortion(box, sx: float, sy: float, sz: float) -> tuple[float, flo
             - molecules (with position attributes)
             - box_size (numpy array of [Lx, Ly, Lz])
             - potential (object with potential_energy(p1, p2, box_size) method)
-            - total_Epot (float, total potential energy of undistorted configuration)
+            - total_epot (float, total potential energy of undistorted configuration)
     sx : float
         Scaling factor for x-direction
     sy : float
@@ -34,8 +34,7 @@ def compute_distortion(box, sx: float, sy: float, sz: float) -> tuple[float, flo
     potential = box.potential
     box_size = box.box_size
 
-    # Undistorted energy
-    E0 = box.total_Epot
+    E0 = box.total_epot
 
     # Distorted box size and scale matrix
     new_box = box_size * np.array([sx, sy, sz])

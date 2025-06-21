@@ -59,7 +59,7 @@ class Molecule:
         """
         self._alt_position = np.copy(self._position)
     
-    def move_random(self, b, box_size) -> None:
+    def move_random(self, b: float, box_size: np.ndarray) -> None:
         """
         Perform a random displacement move on the alternative position.
         
@@ -71,7 +71,7 @@ class Molecule:
         ----------
         b : float
             Maximum displacement distance in each dimension
-        box_size : array_like
+        box_size : numpy.ndarray
             Dimensions of the simulation box as [len_x, len_y, len_z]
         """
         self._alt_position = (
@@ -103,7 +103,7 @@ class Molecule:
         return self._alt_position
     
     @position.setter
-    def position(self, new_position) -> None:
+    def position(self, new_position: np.ndarray) -> None:
         """
         Set a new position for the molecule.
         
@@ -113,7 +113,7 @@ class Molecule:
         
         Parameters
         ----------
-        new_position : array_like
+        new_position : numpy.ndarray
             New 3D position as [x, y, z] coordinates
             
         Raises

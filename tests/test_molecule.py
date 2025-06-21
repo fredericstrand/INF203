@@ -22,7 +22,7 @@ def test_position_dimension(invalid_position):
 
 def test_move_random():
     mol = Molecule(np.array([3.0, 2.0, 1.0]))
-    box_size = 10
+    box_size = np.array([1, 2, 5])
     b = 0.5
     mol.move_random(b, box_size)
     delta = (mol.alt_position - mol.position + box_size / 2) % box_size - box_size / 2
@@ -41,5 +41,5 @@ def test_getter_alt_position():
 
 def test_setter_position():
     mol = Molecule(np.array([0.0, 0.0, 0.0]))
-    mol.position = [7.0, 8.0, 9.0]
+    mol.position = np.array([7.0, 8.0, 9.0])
     assert np.allclose(mol.position, [7.0, 8.0, 9.0])

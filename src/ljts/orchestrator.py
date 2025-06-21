@@ -36,7 +36,7 @@ class Simulation(ABC):
         ----------
         box : Box
             The simulation box containing molecules and potential
-        log_energy : bool, optional
+        log_energy : bool
             Whether to track potential energy during simulation (default is True)
         """
         self.box = box
@@ -68,7 +68,7 @@ class MetropolisMC(Simulation):
     Attributes
     ----------
     T : float
-        Temperature of the simulation (in reduced units)
+        Temperature of the simulation
     b : float
         Maximum displacement parameter for random moves
     
@@ -87,7 +87,7 @@ class MetropolisMC(Simulation):
         box : Box
             The simulation box containing molecules and potential
         T : float
-            Temperature of the simulation in reduced units
+            Temperature of the simulation
         b : float
             Maximum displacement parameter for random moves
         log_energy : bool
@@ -104,7 +104,7 @@ class MetropolisMC(Simulation):
         Attempts to move each molecule once on average by selecting random
         molecules and applying the Metropolis acceptance criterion. The
         energy difference is calculated and moves are accepted based on
-        the Boltzmann probability exp(-ΔE/T).
+        the Boltzmann probability exp(-delta(E)/T).
         
         Returns
         -------
@@ -116,18 +116,6 @@ class MetropolisMC(Simulation):
         for _ in range(N):
             idx = np.random.randint(N)
             mol = self.box._molecules[idx]
-            
-            # Calculate before the move
-            energies_before = []
-            for other in self.box.get_molecules:
-                if other is not mol:
-                    energy = self.box.potential.potential_energy(
-                        mol.position, other.position, self.box.box_size
-                    )
-                    energies_before.append(energy)
-            energy_before_move = sum(energies_before)
-
-            # Perform a random trial move
             
             # Calculate before the move
             energies_before = []
@@ -155,27 +143,15 @@ class MetropolisMC(Simulation):
             # Compute the change in potential energy
             delta_E = energy_after_move - energy_before_move
 
-
-            # Calculate after the move
-            energies_after = []
-            for other in self.box.get_molecules:
-                if other is not mol:
-                    energy = self.box.potential.potential_energy(
-                        mol.alt_position, other.position, self.box.box_size
-                    )
-                    energies_after.append(energy)
-            energy_after_move = sum(energies_after)
-
-            # Compute the change in potential energy
-            delta_E = energy_after_move - energy_before_move
-
             # Accept or reject the move based on Metropolis criterion
             if delta_E < 0 or np.random.rand() < np.exp(-delta_E / self.T):
                 mol.position = np.copy(mol.alt_position)
                 accepted += 1
             else:
                 mol.reset_alt_position()
+                
         self.box.total_potential_energy()
+
         return accepted / N
 
 
@@ -194,9 +170,9 @@ class Orchestrator:
         Path to the JSON configuration file
     config : dict
         Loaded configuration parameters
-    box : Box or None
+    box : Box
         The simulation box instance
-    simulation : Simulation or None
+    simulation : Simulation
         The simulation instance
     current_step : int
         Current simulation step number
@@ -255,8 +231,10 @@ class Orchestrator:
             with open(self.config_file, 'r') as f:
                 config = json.load(f)
             return config
+
         except FileNotFoundError:
             raise FileNotFoundError(f"Configuration file '{self.config_file}' not found.")
+
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON in configuration file: {e}")
     
@@ -295,13 +273,9 @@ class Orchestrator:
             List of compartment configurations, each containing density
             and volume_fraction parameters
         """
-        # This method would need to be implemented based on your Box class
-        # compartment setup functionality
         for i, compartment in enumerate(compartments):
             density = compartment["density"]
             volume_fraction = compartment["volume_fraction"]
-            # Add molecules to compartment based on density and volume_fraction
-            # Implementation depends on your Box class methods
             print(f"Setting up compartment {i+1}: density={density}, volume_fraction={volume_fraction}")
     
     def setup_simulation(self, simulation_class: type, **simulation_kwargs: Any) -> None:
