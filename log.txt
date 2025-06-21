@@ -1,0 +1,356 @@
+commit 0e64ff63f523ae75e75c892fc4a3c8bafd04e079
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Sat Jun 21 08:39:23 2025 +0200
+
+    adding the only finished liq vap log
+
+commit 579a51c1f75af957125fc7486238ec8e1ab07fda
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Fri Jun 20 21:56:05 2025 +0200
+
+    feat: expanded Uncertainty analysis
+
+commit 264b69cb9aa3a3365335e629a8aa12e62ab23c41
+Merge: 994415d e3e1d05
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Fri Jun 20 11:43:07 2025 +0200
+
+    acceptance test
+
+commit 994415d26d0108a293cfa2c8a24acdd90dc8da92
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Fri Jun 20 11:37:08 2025 +0200
+
+    added acceptance test
+
+commit e3e1d0588fed0ed6f8939b106e6c53ac9b09adeb
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Fri Jun 20 11:35:34 2025 +0200
+
+    Squash merge chore/minor-fixes into main
+
+commit 98a11fe5a91fd8f17275122f84c53bdfec4d2961
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Fri Jun 20 09:57:53 2025 +0200
+
+    fix: fixing Uncertainty analysis
+
+commit 4427ab0ba88beb59b4c8099b65bbbaf802a7ce13
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Fri Jun 20 09:54:41 2025 +0200
+
+    fix: correcting the Uncertainty analysis
+
+commit 5093cfe28431835991f8b8f76db892802b8cd5f9
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Fri Jun 20 09:12:01 2025 +0200
+
+    small fixes
+
+commit 85e653da609f8f109107e2304e906f125ded2f8f
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Fri Jun 20 08:49:43 2025 +0200
+
+    remove redundant potential classes
+
+commit 291828450ab8624ae927789111bd5e3f92c28c6e
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Thu Jun 19 21:26:13 2025 +0200
+
+    fixing errors after merging
+
+commit 20494aa35bbb202e8af22450d08bb1e3ec9a93f1
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Thu Jun 19 20:30:51 2025 +0200
+
+    ..
+
+commit 9b37e688bfaf6c7a57a2e6e19a44dca912e9a0e3
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Thu Jun 19 20:00:14 2025 +0200
+
+    ..dw
+
+commit 75a9f48e39406fa635fbef5c06878a914fc380f9
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Thu Jun 19 19:38:30 2025 +0200
+
+    ...
+
+commit 9075fe4656f1c2cd832f1e37b22439e8b8575b2e
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Thu Jun 19 19:38:30 2025 +0200
+
+    ...
+
+commit e3eff9290fc7fc2fea1c12ff7e264cc081a404f2
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Thu Jun 19 19:34:23 2025 +0200
+
+    small json
+
+commit 958697b28a34347883a8be971628e28240c79594
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Tue Jun 17 21:49:01 2025 +0200
+
+    added plotting
+
+commit bf3c8bd3e09c860cc70a36b09e439d50cd6627f9
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Tue Jun 17 21:42:43 2025 +0200
+
+    added new json
+
+commit 84fc093dcfad9fe0c120d97eed98cf648215631d
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Tue Jun 17 10:02:48 2025 +0200
+
+    working
+
+commit 2f72f335acbee0910a685441f6d2aeb06bc54a5a
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Thu Jun 19 20:26:41 2025 +0200
+
+    feat: added tests for distortion
+
+commit 889ff48a437961f96180ab8ef485d3d097076b90
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Thu Jun 19 20:05:57 2025 +0200
+
+    Squash merge finalising-comments into main
+
+commit f952a724eb72ef6d27c2d78222cbab2f278eb386
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Thu Jun 19 12:27:26 2025 +0200
+
+    Added professional comments
+
+commit f40045eea30e16de3e69224cd3724362cb656ca0
+Author: Frederic Ljosland Strand <strandfrederic@outlook.com>
+Date:   Wed Jun 18 19:18:38 2025 +0200
+
+    Fixes and factory (#8)
+    
+    * working
+    
+    * added new json
+    
+    * added plotting
+    
+    * simulation done
+
+commit a864b9c28545c24e150f5d8972ef7b9353ee8520
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Wed Jun 18 12:27:08 2025 +0200
+
+    fix: fixing small bugs and updating comment
+
+commit 4f6b5edb7554e264ea2a161325d804d4f5de81ff
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Wed Jun 18 10:45:44 2025 +0200
+
+    feat: added comments
+
+commit ccc0ce55a56fa7f02e195e230379a952189981d6
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Wed Jun 18 10:32:22 2025 +0200
+
+    feat: uncertainty analysis
+
+commit dda56e4d0c189036795479c4c362008df0a72fca
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Wed Jun 18 09:47:55 2025 +0200
+
+    chore: Cleanup
+
+commit 73b5b5e7e3ce1300f1080186f31ee33b735d4a55
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Wed Jun 18 09:46:02 2025 +0200
+
+    Squash merge feat/numpy-numbers into main
+
+commit 09d6fd9e4659310809261feab68a6a86958089a4
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Tue Jun 17 09:35:09 2025 +0200
+
+    fix: fixing bugs with imports
+
+commit 7973e869860e7e6061aac6596f1c9c550a397860
+Merge: 4cf3a8f 0f105bc
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Tue Jun 17 08:57:56 2025 +0200
+
+    Merge branch 'adding-main'
+
+commit 0f105bc88e1a7d4d7cbed13b288144a6ddaa5b04
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Tue Jun 17 08:56:24 2025 +0200
+
+    Squash merge main into adding-main
+
+commit 8ef69e626bce70acff05ebb1f597b18a87837017
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Tue Jun 17 08:55:36 2025 +0200
+
+    Adding orchestrator
+
+commit 4cf3a8fe7a6297b854d324d605d0b86bbc4e6b29
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Tue Jun 17 08:49:57 2025 +0200
+
+    fix: reworked molecule dimension test
+
+commit 58ef765449af33236f5ab248dc0fa5340d6990cb
+Author: Christopher Ljosland Strand <127755148+ChristopherStrand@users.noreply.github.com>
+Date:   Mon Jun 16 18:42:50 2025 +0200
+
+    Test/validation (#7)
+    
+    * no
+    
+    * feat: started on molecule tests
+    
+    * feat: implemented tests for box class
+    
+    * feat: finished testing
+
+commit 4a792f2f22909b46fc85416055a13ae549910b72
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Mon Jun 16 17:30:52 2025 +0200
+
+    added orchestrattor
+
+commit 0867c0309d86a6100b240e87d31cb4f78c8ebf6d
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Sun Jun 15 16:32:36 2025 +0200
+
+    feat: added gitignore
+
+commit 5e304e28f8ba02a3e2dd65ef05a80a03871b5a43
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Fri Jun 13 09:37:19 2025 +0200
+
+    feat: Added 3d cell list
+
+commit 07d304acce4117edd66160348c20a5314fb8d274
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Thu Jun 12 17:34:16 2025 +0200
+
+    added writing results function
+
+commit 3230464e82f47db5945ee029f980d68ab985fd15
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Tue Jun 10 12:06:56 2025 +0200
+
+    small typo
+
+commit 9a9f38c305c7443fbdb02f58e28244d9e6415c55
+Author: Frederic Ljosland Strand <strandfrederic@outlook.com>
+Date:   Tue Jun 10 11:19:35 2025 +0200
+
+    Feat/distorted (#6)
+
+commit c831d4a22008cc502bdede87bf4bfa18fce61b0b
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Tue Jun 10 10:53:01 2025 +0200
+
+    feat: added extensive docstrings
+
+commit 58787b37f8590e3bd7a8707986b54e1cbd701479
+Author: Christopher Ljosland Strand <127755148+ChristopherStrand@users.noreply.github.com>
+Date:   Tue Jun 10 09:55:58 2025 +0200
+
+    feat: added writexyz and argparse (#5)
+
+commit 1d48b0cb79c868cc49665e3f09e5f1c141d8cfae
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Mon Jun 9 16:23:37 2025 +0200
+
+    fixing errors
+
+commit c0aa45fe966a6277c9534a32b31f1429a6060019
+Author: Frederic Ljosland Strand <strandfrederic@outlook.com>
+Date:   Mon Jun 9 15:40:10 2025 +0200
+
+    reworking classes (#4)
+    
+    * reworking complete structure
+    
+    * before bug fixes
+
+commit 14999b0f6da21e2877c57a224b0d7df527b8d598
+Author: Christopher Ljosland Strand <127755148+ChristopherStrand@users.noreply.github.com>
+Date:   Sat Jun 7 22:27:10 2025 +0200
+
+    Feat: added monte carlo simulation (#3)
+    
+    * feat: added sim, something is wrong
+    
+    * fix: fixed e pot for simulation
+    
+    * fix: bug in loop
+
+commit 9053251a7ce88f707e59375c72674dbe50e32de4
+Merge: 02c160d dec00d9
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Fri Jun 6 18:51:25 2025 +0200
+
+    Merge branch 'cleaning'
+
+commit dec00d94608ccda48c36b925af2f041f2fb997b7
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Fri Jun 6 18:48:26 2025 +0200
+
+    fixed some issues the teacher raised
+
+commit 02c160d1be383138b1e3a52b26219153a1fd8de8
+Author: Frederic Ljosland Strand <strandfrederic@outlook.com>
+Date:   Wed Jun 4 09:04:03 2025 +0200
+
+    minor changes (#1)
+    
+    * changed logic for molecule creating
+    
+    * minor changes
+
+commit 2ce44167eaf48a38bfed42241dc7ee2b9c2b7050
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Wed Jun 4 09:01:53 2025 +0200
+
+    minor changes
+
+commit 5dc28731d0f9bb6d1dce74676311ae74076fec87
+Author: fredericstrand <strandfrederic@outlook.com>
+Date:   Tue Jun 3 22:35:28 2025 +0200
+
+    changed logic for molecule creating
+
+commit 6a6272bf9dc5b28de728114b4c1a49ce921a16a6
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Tue Jun 3 16:37:15 2025 +0200
+
+    feat: added data Encapsulation
+
+commit 29c5c2b43917380e0a2227a5eaafa94f031ebe4c
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Tue Jun 3 15:21:51 2025 +0200
+
+    fix: fixed bug in potential_energy
+
+commit d22e1551264f8106eea32b5f1fe4e93bb8692c1d
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Sun Jun 1 13:23:04 2025 +0200
+
+    feat: added comments
+
+commit 81000da4d964d68c41d414f4db999a1c75af7812
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Sun Jun 1 12:08:00 2025 +0200
+
+    feat: populating box method
+
+commit 2fb886ea905c3bd38b2324318b5e7912e4e21d37
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Sat May 31 21:22:31 2025 +0200
+
+    feat: class structure and methods

@@ -59,7 +59,7 @@
 
 \subsection*{Group composition and collaboration}
 
-The group consists of Iver Eftedal, Christopher Strand and Frederic Strand. First we established epics, large bodies of work related to multiple user stories to guide our work forward. We then split them into smaller bodies of work and used a kanban board to assign and keep track of the progress on different tasks. For collaboration we used the agile methods, with daily meetings and sprints (in this case, worksheets). For a seamless version control, we utilize git (github). Each member should work on their own branch with their assigned subtask, and then merge to the main branch. Ideally, this should be done in person with the other members, in case of merge conflict. 
+The group consists of Iver Eftedal, Christopher Strand and Frederic Strand. For a successful project, we first established the personas and their user stories to guide what we wanted to accomplish with the project. From this, we found epics, large bodies of work related to multiple user stories to guide our work forward. We then split them into smaller bodies of work and used a kanban board to assign and keep track of the progress on different tasks. For collaboration we used the agile methods, with daily meetings and sprints (in this case, worksheets). For a seamless version control, we utilize git (github). Each member should work on their own branch with their assigned subtask, and then merge to the main branch. Ideally, this should be done in person with the other members, in case of merge conflict. Notice however, that towards the end of the project we got a more messy git log due to multiple people working and catching errors in the same places. We knew that this might happen, so towards the end it was important to gather to work together on these issues. 
 
 
 \subsection*{Requirements Register}
@@ -78,18 +78,18 @@ To guide the process it is a good idea to identify some personas and user storie
 
 \begin{center}
 \renewcommand{\arraystretch}{1.4}
-\begin{tabularx}{\textwidth}{|c|c|X|c|}
+\begin{tabularx}{\textwidth}{|c|c|X|c|X|}
 \hline
-\textbf{ID} & \textbf{Persona} & \textbf{User Story} & \textbf{MoSCoW} \\
+\textbf{ID} & \textbf{Persona} & \textbf{User Story} & \textbf{MoSCoW} & \textbf{Implemented?}\\
 \hline
-US1 & Researcher Ole & Wants to run simulations with varying densities to compare molecular behavior. & Must \\
-US2 & Student Geir & Wants to visualize molecule positions to better understand spatial distribution. & Should \\
-US3 & Developer Arkadi & Needs unit tests for molecule initialization to ensure correctness after changes. & Could \\
-US4 & Researcher Ole & Needs to log potential energy during simulation to analyze convergence. & Must \\
-US5 & Researcher Ole & Wants to save XYZ files of the initial, final, and intermediate states for external visualization. & Should \\
-US6 & Developer Arkadi & Implements the Metropolis Monte Carlo algorithm so the system reaches equilibrium. & Must \\
-US7 & Student Geir & Wants access to stats like average energy and surface tension post-equilibration to assess results. & Should \\
-US8 & Developer Arkadi & Uses abstract classes or callable objects where suitable to keep the codebase flexible and modular. & Could \\
+US1 & Researcher Ole & Wants to run simulations with varying densities to compare molecular behavior. & Must & Yes, can be done through JSON file\\
+US2 & Student Geir & Wants to visualize molecule positions to better understand spatial distribution. & Should & Partly \\
+US3 & Developer Arkadi & Needs unit tests for molecule initialization to ensure correctness after changes. & Should & Yes\\
+US4 & Researcher Ole & Needs to log potential energy during simulation to analyze convergence. & Must & Yes\\
+US5 & Researcher Ole & Wants to save XYZ files of the initial, final, and intermediate states for external visualization. & Should & Yes (no visalization, can use JMol) \\
+US6 & Developer Arkadi & Implements the Metropolis Monte Carlo algorithm so the system reaches equilibrium. & Must &  Yes\\
+US7 & Student Geir & Wants access to stats like average energy and surface tension post-equilibration to assess results. & Should & Yes \\
+US8 & Developer Arkadi & Uses abstract classes or callable objects where suitable to keep the codebase flexible and modular. & Could & Yes\\
 \hline
 \end{tabularx}
 
@@ -101,7 +101,7 @@ US8 & Developer Arkadi & Uses abstract classes or callable objects where suitabl
 \subsubsection*{Epics}
 
 \begin{itemize}
-    \item \textbf{EP1 – Core Simulation Engine:} Implement the foundational components for Monte Carlo simulations, including molecule initialization, energy calculations, and box setup. Related to: US1, US6
+    \item \textbf{EP1 – Core Simulation Engine:} Implement the foundational components for Monte Carlo simulations, including other important support functions. Related to: US1, US6
     
     \item \textbf{EP2 – Equilibration and Sampling Control:} Design and implement mechanisms for managing equilibration and production phases, including reset points and logging strategies. Related to: US4, US7
     
@@ -151,6 +151,8 @@ The project is organized as a python package, which later could be published for
             \item \texttt{potential.py}: Contains Potential class with abstract subclasses for different approaches.
             \item \texttt{distortion.py}: Function for computing distortion and determining surface tension
             \item \texttt{orchestor.py}: Class for running the simulation
+        \item \textbf{timeseries/}: Contains the Uncertainty analysis
+            \item \texttt{box_average.py}: calculates the mean and standard deviation and plots the data in a histogram/distribution.
     \end{itemize}
     \item \textbf{tests/}: Contains unit tests or integration tests
     that verify the correctness of various modules.
@@ -160,7 +162,7 @@ The project is organized as a python package, which later could be published for
 
 \subsubsection*{ER - diagram}
 
-
+An ER - diagram shows the relations between the different classes and is a good way of getting an overview. Because our was too big it is given in the appendix.
 \subsection*{Advanced OOP techniques}
 
 We use both abstract methods and a factory for a more modular and extendable program. In our case, this allows for an easy extension to a different way of calculating potential energy, for example harmonic. Refering to the personas, this saves Developer Arkadi from a lot of headaches when extending the program.
@@ -233,13 +235,23 @@ We generate a file logging the parameters and the values for epot etc for each "
 
 \subsection*{Vapor only simulation}
 
+For the Vapour only simulation we get a potential energy of -13,9 and a surface tension of -0.0055. A low gamma makes sense when there is not boundary betweem them. 
+
 \subsection*{Liquid-Vapor simulation}
 
-\subsection*{Comparison with litterature}
+For the Liquid-Vapour simulation we get a potential energy of ..., and a surface tension of. This is because...
 
+\subsection*{Comparison with literature}
+
+Even though our result is not exactly like any of the literature provided to us, they are in the correct area. The literature seems to identify an area, but not a specific value, ca. 0.35 - 0.80 depending on the setup for their simulation. For example their temperatures, densities, etc. In Simon Stephan's \cite{stephan_2018} article they achieve a gamma around 0.40, but in Gloor's \cite{gloor_2005} article they get a reduced surface tension of 0.615 For more accurate results, we should make a larger system (both in size and number of molecules). To do this effectively we need a low level language, like c++ and ideally a parallelization library like OpenMP. Then we would be more confident in our results. 
 
 
 \bibliographystyle{plain}
 \bibliography{bib}
+
+\section{Appendix}
+
+  \includegraphics[width=0.8\textwidth]{images/ER-diageam.jpeg}\\[1cm]
+  
 
 \end{document}
