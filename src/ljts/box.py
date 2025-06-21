@@ -62,7 +62,7 @@ class Box:
 
         if den_liq is not None and den_vap is not None:
             self.populate_box(den_liq, den_vap)
-            self.populate_box(den_liq, den_vap)
+            
 
         self._total_Epot = 0.0
         self.total_potential_energy()
