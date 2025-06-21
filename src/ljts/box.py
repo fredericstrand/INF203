@@ -1,6 +1,5 @@
 import numpy as np
 from src.ljts.molecule import Molecule
-from typing import Optional
 
 
 class Box:
@@ -8,9 +7,8 @@ class Box:
     A class used to represent a simulation box containing molecules.
     
     The Box class manages a collection of molecules within a 3D rectangular
-    container and handles potential energy calculations using cell lists for
-    efficient neighbor searching.
-    
+    container and handles potential energy calculations     
+
     Attributes
     ----------
     _box_size : numpy.ndarray
@@ -19,7 +17,7 @@ class Box:
         List of Molecule objects contained in the box
     potential : object
         Potential energy calculation object
-    _total_Epot : float
+    _total_epot : float
         Total potential energy of the system
     
     Methods
@@ -34,12 +32,15 @@ class Box:
         Calculates the total potential energy using 3D cell lists
     """
     
-    def __init__(self, len_x, len_y, len_z, 
-                 den_liq: Optional[float] = None, 
-                 den_vap: Optional[float] = None, 
-                 potential = None) -> None:
+    def __init__(self, 
+                 len_x: float, 
+                 len_y: float, 
+                 len_z: float, 
+                 den_liq: float, 
+                 den_vap: float, 
+                 potential) -> None:
         """
-        Initialize the Box with specified dimensions and optional population.
+        Initialize the Box with specified dimensions and population.
         
         Parameters
         ------
@@ -49,12 +50,12 @@ class Box:
             Length of the box in the y-direction
         len_z : float
             Length of the box in the z-direction
-        den_liq : float, optional
-            Liquid phase density for initial population (default is None)
-        den_vap : float, optional
-            Vapor phase density for initial population (default is None)
-        potential : object, optional
-            Potential energy calculation object (default is None)
+        den_liq : float
+            Liquid phase density for initial population
+        den_vap : float
+            Vapor phase density for initial population
+        potential : object
+            Potential energy calculation object
         """
         self._box_size = np.array([abs(len_x), abs(len_y), abs(len_z)])
         self._molecules = []
@@ -95,7 +96,7 @@ class Box:
 
                 Epot += self.potential.potential_energy(pos_i, pos_j, self._box_size)
 
-        self._total_Epot = Epot
+        self._total_epot = Epot
 
     def populate_box(self, den_liq: float, den_vap: float) -> None:
         """
@@ -173,7 +174,7 @@ class Box:
         float
             Total potential energy of all molecules in the box
         """
-        return self._total_Epot
+        return self._total_epot
 
     @property
     def num_molecules(self) -> int:
@@ -198,7 +199,3 @@ class Box:
             Box dimensions as [len_x, len_y, len_z]
         """
         return self._box_size
-
-    @property
-    def total_Epot(self):
-        return self._total_Epot

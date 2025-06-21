@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 import numpy as np
 
 
@@ -71,8 +72,8 @@ class LJTS(Potential):
         
         Parameters
         ----------
-        cutoff : float, optional
-            Cutoff distance for potential interactions (default is 2.5)
+        cutoff : float
+            Cutoff distance for potential interactions (default = 2.5)
         """
         self.cutoff = cutoff
         self.u = 4 * ((1.0 / cutoff**12) - (1.0 / cutoff**6))
@@ -86,7 +87,7 @@ class LJTS(Potential):
         conditions. Returns zero if the distance exceeds the cutoff.
         
         The LJTS potential is given by:
-        U(r) = 4 * [(1/r)^12 - (1/r)^6] - u     for r <= r_cutoff
+        U(r) = 4 * [(1/r^12) - (1/r^6)] - u     for r <= r_cutoff
         U(r) = 0                                for r > r_cutoff
         
         where u is the shift value ensuring continuity at r_cutoff.
@@ -175,7 +176,7 @@ class PotentialFactory:
 
         self._types[name] = potential_class
 
-    def __call__(self, name: str, **kwargs) -> Potential:
+    def __call__(self, name: str, **kwargs: Any) -> Potential:
         """
         Create and return a potential instance by name.
         
