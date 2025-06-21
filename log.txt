@@ -1,3 +1,41 @@
+commit 2eb4750c304ff956da37d01f33559d2f4607ac80
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Sat Jun 21 15:48:12 2025 +0200
+
+    Final commit
+
+commit f3f439435b2df72635b519558825720ba12ec90a
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Sat Jun 21 15:47:19 2025 +0200
+
+    Fixed dropna issue on box_average
+
+commit 17329dfed44067802aa8aaadd59bbe90251de2f2
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Sat Jun 21 15:30:56 2025 +0200
+
+    Finalising
+    
+    Added updated report, removed .tex version and removed pycache
+
+commit 17d28350aea3a38591d6aa73c8d4e82ff99b2db5
+Author: ioeftedal <ivar.odegardstuen.eftedal@nmbu.no>
+Date:   Sat Jun 21 15:28:53 2025 +0200
+
+    Squash merge last-changes into main
+
+commit 4655ad0d8b1ff19a867d16acd092e6b4f2547244
+Author: Frederic Ljosland Strand <strandfrederic@outlook.com>
+Date:   Sat Jun 21 14:07:12 2025 +0200
+
+    Snall mistake
+
+commit 8667bc705d6e2c86dcb032e414e68ee7d0d1d0e1
+Author: chris2pher1503 <christopher150304@outlook.com>
+Date:   Sat Jun 21 09:09:45 2025 +0200
+
+    adding last files
+
 commit 0e64ff63f523ae75e75c892fc4a3c8bafd04e079
 Author: chris2pher1503 <christopher150304@outlook.com>
 Date:   Sat Jun 21 08:39:23 2025 +0200
